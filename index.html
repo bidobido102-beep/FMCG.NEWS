@@ -11,6 +11,7 @@ header { background:#222; padding:15px; display:flex; justify-content:space-betw
 .container { padding:20px }
 .card { background:#1e1e1e; padding:15px; margin-bottom:10px; border-radius:10px }
 button { padding:8px 12px; cursor:pointer }
+a { color: #4da6ff; text-decoration: none }
 </style>
 
 </head>
@@ -22,7 +23,7 @@ button { padding:8px 12px; cursor:pointer }
 <button onclick="toggleLang()">EN/AR</button>
 </header>
 
-<div class="container" id="news"></div>
+<div class="container" id="news">جاري تحميل الأخبار...</div>
 
 <script>
 
@@ -35,26 +36,35 @@ html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 async function fetchNews(){
 try{
 
-const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.skynewsarabia.com/web/rss");
+const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.aljazeera.net/aljazeera/rss");
 const data = await res.json();
 
 const container = document.getElementById("news");
+
+if(!data.items){
+container.innerHTML = "فشل تحميل الأخبار";
+return;
+}
+
 container.innerHTML = "";
 
 data.items.slice(0, 10).forEach(n => {
 container.innerHTML += `
 <div class="card">
 <h3>${n.title}</h3>
-<p>${n.author || "Sky News"}</p>
+<p>${n.author || "مصدر الخبر"}</p>
 <a href="${n.link}" target="_blank">اقرأ الخبر</a>
 </div>`;
 });
 
 }catch(e){
+document.getElementById("news").innerHTML = "حصل خطأ في تحميل الأخبار";
 console.log(e);
 }
 }
+
 fetchNews();
+
 </script>
 
 </body>
