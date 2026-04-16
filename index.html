@@ -25,7 +25,6 @@ button { padding:8px 12px; cursor:pointer }
 <div class="container" id="news"></div>
 
 <script>
-const API_BASE = "https://fmcg-api-production-cccc.up.railway.app/api";
 
 function toggleLang(){
 const html = document.documentElement;
@@ -35,17 +34,18 @@ html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 
 async function fetchNews(){
 try{
-const res = await fetch(API_BASE + "/news");
+
+const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.skynewsarabia.com/web/rss");
 const data = await res.json();
 
 const container = document.getElementById("news");
 container.innerHTML = "";
 
-data.forEach(n => {
+data.items.slice(0, 10).forEach(n => {
 container.innerHTML += `
 <div class="card">
 <h3>${n.title}</h3>
-<p>${n.source}</p>
+<p>${n.author || "Sky News"}</p>
 <a href="${n.link}" target="_blank">اقرأ الخبر</a>
 </div>`;
 });
@@ -54,7 +54,6 @@ container.innerHTML += `
 console.log(e);
 }
 }
-
 fetchNews();
 </script>
 
