@@ -36,29 +36,34 @@ html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 async function fetchNews(){
 try{
 
-const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.aljazeera.net/aljazeera/rss");
-const data = await res.json();
+const url = "https://www.skynewsarabia.com/web/rss";
+const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url));
+const text = await res.text();
 
+const parser = new DOMParser();
+const xml = parser.parseFromString(text, "text/xml");
+
+const items = xml.querySelectorAll("item");
 const container = document.getElementById("news");
-
-if(!data.items){
-container.innerHTML = "فشل تحميل الأخبار";
-return;
-}
 
 container.innerHTML = "";
 
-data.items.slice(0, 10).forEach(n => {
+items.forEach((item, i) => {
+if(i >= 10) return;
+
+const title = item.querySelector("title")?.textContent;
+const link = item.querySelector("link")?.textContent;
+
 container.innerHTML += `
 <div class="card">
-<h3>${n.title}</h3>
-<p>${n.author || "مصدر الخبر"}</p>
-<a href="${n.link}" target="_blank">اقرأ الخبر</a>
+<h3>${title}</h3>
+<p>Sky News</p>
+<a href="${link}" target="_blank">اقرأ الخبر</a>
 </div>`;
 });
 
 }catch(e){
-document.getElementById("news").innerHTML = "حصل خطأ في تحميل الأخبار";
+document.getElementById("news").innerHTML = "❌ حصل خطأ في تحميل الأخبار";
 console.log(e);
 }
 }
