@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FMCG News Egypt</title>
+<title>FMCG & Market News Egypt</title>
 
 <style>
 body { font-family: Arial; background:#111; color:#fff; margin:0 }
 header { background:#222; padding:15px; display:flex; justify-content:space-between }
 .container { padding:20px }
 .card { background:#1e1e1e; padding:15px; margin-bottom:10px; border-radius:10px }
-button { padding:8px 12px; cursor:pointer }
+button { padding:8px 12px; cursor:pointer; margin-left:5px }
 a { color: #4da6ff; text-decoration: none }
+.filters { padding:10px }
+.active { background:#4da6ff; color:#000 }
 </style>
 
 </head>
@@ -19,18 +21,48 @@ a { color: #4da6ff; text-decoration: none }
 <body>
 
 <header>
-<h2>اخبار السلع الاستهلاكية</h2>
+<h2>اخبار السوق المصري</h2>
 <button onclick="toggleLang()">EN/AR</button>
 </header>
+
+<div class="filters">
+<button onclick="setFilter('all')" class="active">الكل</button>
+<button onclick="setFilter('fmcg')">FMCG</button>
+<button onclick="setFilter('gold')">الذهب</button>
+<button onclick="setFilter('cars')">السيارات</button>
+<button onclick="setFilter('building')">مواد البناء</button>
+</div>
 
 <div class="container" id="news">جاري تحميل الأخبار...</div>
 
 <script>
 
+let currentFilter = "all";
+let allNews = [];
+
 function toggleLang(){
 const html = document.documentElement;
 html.lang = html.lang === 'ar' ? 'en' : 'ar';
 html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
+}
+
+function setFilter(type){
+currentFilter = type;
+document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+event.target.classList.add("active");
+renderNews();
+}
+
+function matchCategory(title){
+
+title = title.toLowerCase();
+
+if(title.includes("ذهب") || title.includes("gold")) return "gold";
+if(title.includes("سيارة") || title.includes("car")) return "cars";
+if(title.includes("حديد") || title.includes("اسمنت") || title.includes("building")) return "building";
+if(title.includes("شركة") || title.includes("منتجات") || title.includes("غذائية") || title.includes("fmcg")) return "fmcg";
+
+return "other";
 }
 
 async function fetchNews(){
@@ -44,27 +76,49 @@ const parser = new DOMParser();
 const xml = parser.parseFromString(text, "text/xml");
 
 const items = xml.querySelectorAll("item");
-const container = document.getElementById("news");
 
-container.innerHTML = "";
+allNews = [];
 
-items.forEach((item, i) => {
-if(i >= 10) return;
-
+items.forEach((item) => {
 const title = item.querySelector("title")?.textContent;
 const link = item.querySelector("link")?.textContent;
 
+allNews.push({
+title,
+link,
+category: matchCategory(title)
+});
+});
+
+renderNews();
+
+}catch(e){
+document.getElementById("news").innerHTML = "❌ فشل تحميل الأخبار";
+console.log(e);
+}
+}
+
+function renderNews(){
+const container = document.getElementById("news");
+container.innerHTML = "";
+
+let filtered = allNews;
+
+if(currentFilter !== "all"){
+filtered = allNews.filter(n => n.category === currentFilter);
+}
+
+filtered.slice(0, 15).forEach(n => {
 container.innerHTML += `
 <div class="card">
-<h3>${title}</h3>
-<p>Sky News</p>
-<a href="${link}" target="_blank">اقرأ الخبر</a>
+<h3>${n.title}</h3>
+<p>التصنيف: ${n.category}</p>
+<a href="${n.link}" target="_blank">اقرأ الخبر</a>
 </div>`;
 });
 
-}catch(e){
-document.getElementById("news").innerHTML = "❌ حصل خطأ في تحميل الأخبار";
-console.log(e);
+if(filtered.length === 0){
+container.innerHTML = "لا توجد أخبار في هذا القسم";
 }
 }
 
