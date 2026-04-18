@@ -3,42 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FMCG & Market News Egypt</title>
+<title>Egypt Market Intelligence</title>
 
 <style>
-body { font-family: Arial; background:#111; color:#fff; margin:0 }
-header { background:#222; padding:15px; display:flex; justify-content:space-between }
-.container { padding:20px }
-.card { background:#1e1e1e; padding:15px; margin-bottom:10px; border-radius:10px }
-button { padding:8px 12px; cursor:pointer; margin-left:5px }
-a { color: #4da6ff; text-decoration: none }
-.filters { padding:10px }
-.active { background:#4da6ff; color:#000 }
-</style>
+body { font-family: Arial; background:#0d1117; color:#fff; margin:0 }
+header { background:#161b22; padding:15px; display:flex; justify-content:space-between; align-items:center }
+h2 { margin:0 }
 
+.container { padding:20px }
+.card { background:#161b22; padding:15px; margin-bottom:10px; border-radius:10px; transition:0.3s }
+.card:hover { transform:scale(1.02) }
+
+button { padding:8px 12px; cursor:pointer; border:none; border-radius:6px }
+a { color:#58a6ff; text-decoration:none }
+
+.filters { padding:10px }
+.filters button { margin:3px }
+.active { background:#58a6ff; color:#000 }
+
+.search { padding:10px }
+input { padding:8px; width:100%; border-radius:6px; border:none }
+
+.badge { font-size:12px; padding:3px 6px; border-radius:5px; margin-right:5px }
+.gold { background:gold; color:black }
+.cars { background:#00bcd4 }
+.building { background:#ff9800 }
+.fmcg { background:#4caf50 }
+</style>
 </head>
 
 <body>
 
 <header>
-<h2>اخبار السوق المصري</h2>
+<h2>📊 السوق المصري</h2>
 <button onclick="toggleLang()">EN/AR</button>
 </header>
+
+<div class="search">
+<input type="text" placeholder="ابحث عن خبر..." oninput="searchNews(this.value)">
+</div>
 
 <div class="filters">
 <button onclick="setFilter('all')" class="active">الكل</button>
 <button onclick="setFilter('fmcg')">FMCG</button>
-<button onclick="setFilter('gold')">الذهب</button>
-<button onclick="setFilter('cars')">السيارات</button>
-<button onclick="setFilter('building')">مواد البناء</button>
+<button onclick="setFilter('gold')">ذهب</button>
+<button onclick="setFilter('cars')">سيارات</button>
+<button onclick="setFilter('building')">بناء</button>
 </div>
 
 <div class="container" id="news">جاري تحميل الأخبار...</div>
 
 <script>
 
-let currentFilter = "all";
 let allNews = [];
+let currentFilter = "all";
+let searchTerm = "";
 
 function toggleLang(){
 const html = document.documentElement;
@@ -48,28 +67,47 @@ html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 
 function setFilter(type){
 currentFilter = type;
-document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
 event.target.classList.add("active");
 renderNews();
 }
 
-function matchCategory(title){
+function searchNews(term){
+searchTerm = term.toLowerCase();
+renderNews();
+}
 
+function detectCategory(title){
 title = title.toLowerCase();
 
-if(title.includes("ذهب") || title.includes("gold")) return "gold";
-if(title.includes("سيارة") || title.includes("car")) return "cars";
-if(title.includes("حديد") || title.includes("اسمنت") || title.includes("building")) return "building";
-if(title.includes("شركة") || title.includes("منتجات") || title.includes("غذائية") || title.includes("fmcg")) return "fmcg";
+if(title.includes("ذهب")) return "gold";
+if(title.includes("سيارة")) return "cars";
+if(title.includes("حديد") || title.includes("اسمنت")) return "building";
+if(title.includes("شركة") || title.includes("غذائية")) return "fmcg";
 
 return "other";
+}
+
+function badge(type){
+if(type==="gold") return '<span class="badge gold">ذهب</span>';
+if(type==="cars") return '<span class="badge cars">سيارات</span>';
+if(type==="building") return '<span class="badge building">بناء</span>';
+if(type==="fmcg") return '<span class="badge fmcg">FMCG</span>';
+return "";
 }
 
 async function fetchNews(){
 try{
 
-const url = "https://www.skynewsarabia.com/web/rss";
-const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url));
+const sources = [
+"https://www.skynewsarabia.com/web/rss",
+"https://www.aljazeera.net/aljazeera/rss"
+];
+
+allNews = [];
+
+for(let src of sources){
+const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(src));
 const text = await res.text();
 
 const parser = new DOMParser();
@@ -77,18 +115,17 @@ const xml = parser.parseFromString(text, "text/xml");
 
 const items = xml.querySelectorAll("item");
 
-allNews = [];
-
-items.forEach((item) => {
+items.forEach(item=>{
 const title = item.querySelector("title")?.textContent;
 const link = item.querySelector("link")?.textContent;
 
 allNews.push({
 title,
 link,
-category: matchCategory(title)
+category: detectCategory(title)
 });
 });
+}
 
 renderNews();
 
@@ -99,26 +136,25 @@ console.log(e);
 }
 
 function renderNews(){
-const container = document.getElementById("news");
+let container = document.getElementById("news");
 container.innerHTML = "";
 
-let filtered = allNews;
+let filtered = allNews.filter(n=>{
+return (currentFilter==="all" || n.category===currentFilter)
+&& n.title.toLowerCase().includes(searchTerm);
+});
 
-if(currentFilter !== "all"){
-filtered = allNews.filter(n => n.category === currentFilter);
-}
-
-filtered.slice(0, 15).forEach(n => {
+filtered.slice(0,20).forEach(n=>{
 container.innerHTML += `
 <div class="card">
+${badge(n.category)}
 <h3>${n.title}</h3>
-<p>التصنيف: ${n.category}</p>
 <a href="${n.link}" target="_blank">اقرأ الخبر</a>
 </div>`;
 });
 
-if(filtered.length === 0){
-container.innerHTML = "لا توجد أخبار في هذا القسم";
+if(filtered.length===0){
+container.innerHTML = "لا توجد نتائج";
 }
 }
 
