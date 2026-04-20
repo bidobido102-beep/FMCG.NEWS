@@ -2,59 +2,71 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>Market Dashboard</title>
+<title>السوق المصري - مباشر</title>
 
 <style>
 body { background:#0d1117; color:#fff; font-family:Arial; margin:0 }
 header { background:#161b22; padding:15px }
-.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:10px }
-.card { background:#161b22; padding:15px; border-radius:10px }
-h3 { margin:0 0 10px }
-.big { font-size:24px }
+.section { padding:15px }
+.card { background:#161b22; padding:15px; margin:10px 0; border-radius:10px }
+img { width:100%; border-radius:10px }
+iframe { width:100%; height:400px; border:none }
+h3 { margin:5px 0 }
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>📊 Market Dashboard</h2>
+<h2>📊 السوق المصري (مباشر)</h2>
 </header>
 
-<div class="grid" id="data"></div>
-
-<script>
-
-async function load(){
-const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/dashboard");
-const json = await res.json();
-
-const d = json.data;
-
-document.getElementById("data").innerHTML = `
+<!-- 💰 الذهب -->
+<div class="section">
 <div class="card">
-<h3>💰 ذهب 21</h3>
-<div class="big">${d.gold["21"]} جنيه</div>
+<h3>💰 أسعار الذهب (مباشر)</h3>
+
+<!-- Widget -->
+<iframe src="https://goldprice.org/widget/gold-price-widget.html"></iframe>
+
+</div>
 </div>
 
+<!-- 🏗️ مواد البناء -->
+<div class="section">
 <div class="card">
-<h3>🏗️ حديد</h3>
-<div class="big">${d.iron}</div>
+<h3>🏗️ أسعار الحديد والأسمنت</h3>
+
+<img src="https://images.unsplash.com/photo-1581093588401-22d3c1f0b1b9">
+
+<iframe src="https://www.youm7.com/Section/%D8%A3%D8%B3%D8%B9%D8%A7%D8%B1/297/1"></iframe>
+
+</div>
 </div>
 
+<!-- 🚗 السيارات -->
+<div class="section">
 <div class="card">
-<h3>🚗 سيارات</h3>
-<div class="big">${d.cars}</div>
+<h3>🚗 أسعار السيارات</h3>
+
+<img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70">
+
+<iframe src="https://contactcars.com/ar/prices"></iframe>
+
+</div>
 </div>
 
+<!-- 🛒 السلع -->
+<div class="section">
 <div class="card">
-<h3>🛒 FMCG</h3>
-<div class="big">${d.fmcg}</div>
-</div>
-`;
-}
+<h3>🛒 أسعار السلع الاستهلاكية</h3>
 
-load();
-</script>
+<img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db">
+
+<iframe src="https://www.cpa.gov.eg/ar-eg/%D8%A7%D9%84%D8%A3%D8%B3%D8%B9%D8%A7%D8%B1"></iframe>
+
+</div>
+</div>
 
 </body>
 </html>
