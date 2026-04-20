@@ -1,14 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>FMCG News Egypt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      direction: rtl;
+      margin: 0;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .badge {
+      display: inline-block;
+      background: red;
+      color: white;
+      padding: 2px 6px;
+      font-size: 12px;
+      border-radius: 4px;
+      margin-right: 5px;
+    }
+
+    button {
+      margin: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    a {
+      color: #1e40af;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    small {
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛒 FMCG News Egypt</h1>
+</header>
+
+<!-- ===== أسعار السلع ===== -->
 <div class="card">
-  <h2>📊 أسعار أهم السلع</h2>
+  <h2>📊 أسعار السلع اليوم</h2>
 
   <p><strong>🥇 الذهب</strong></p>
   <ul id="gold"></ul>
 
   <p><strong>🏗️ الحديد</strong></p>
-  <p id="steel"></p>
+  <p id="steel">...</p>
 
   <p><strong>🧱 الأسمنت</strong></p>
-  <p id="cement"></p>
+  <p id="cement">...</p>
 
   <small id="priceDate"></small>
 </div>
+
+<!-- ===== أزرار الفلترة ===== -->
+<div>
+  <button onclick="filterCat('All')">الكل</button>
+  <button onclick="filterCat('Companies')">شركات</button>
+  <button onclick="filterCat('Products')">سلع</button>
+  <button onclick="filterCat('Market')">السوق</button>
+</div>
+
+<!-- ===== حالة التحميل ===== -->
+<p id="status">⏳ جاري تحميل الأخبار...</p>
+
+<!-- ===== الأخبار ===== -->
+<div id="news"></div>
+
+<!-- ===== JavaScript ===== -->
+<script>
+  const API_URL = "https://fmcg-api-production-5e80.up.railway.app/api/data";
+  let allNews = [];
+
+  fetch(API_URL)
+    .then(res => {
+      if (!res.ok) throw new Error("API Error");
+      return res.json();
+    })
+    .then(data => {
+      // ===== الأسعار =====
+      const gold = data.prices.gold;
+      let goldHtml = "";
+      for (let k in gold) {
+        goldHtml += `<li>عيار ${k}: ${gold[k]}</li>`;
+      }
+      document.getElementById("gold").innerHTML = goldHtml;
+      document.getElementById("steel").innerText = data.prices.steel;
+      document.getElementById("cement").innerText = data.prices.cement;
+      document.getElementById("priceDate").innerText =
+        "آخر تحديث: " + data.prices.lastUpdate;
+
+      // ===== الأخبار =====
+      allNews = data.news;
+      document.getElementById("status").innerText = "✅ تم تحميل الأخبار";
+      render(allNews);
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("status").innerText =
+        "❌ خطأ في تحميل البيانات";
+    });
+
+  function render(list) {
+    let html = "";
+    if (list.length === 0) {
+      html = "<p>لا توجد أخبار حاليًا</p>";
+    }
+    list.forEach(n => {
+      html += `
+        <div class="card">
