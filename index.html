@@ -7,28 +7,11 @@
 
 <style>
 body { font-family: Arial; background:#0d1117; color:#fff; margin:0 }
-header { background:#161b22; padding:15px; display:flex; justify-content:space-between; align-items:center }
-h2 { margin:0 }
-
+header { background:#161b22; padding:15px; display:flex; justify-content:space-between }
 .container { padding:20px }
-.card { background:#161b22; padding:15px; margin-bottom:10px; border-radius:10px; transition:0.3s }
-.card:hover { transform:scale(1.02) }
-
-button { padding:8px 12px; cursor:pointer; border:none; border-radius:6px }
+.card { background:#161b22; padding:15px; margin-bottom:10px; border-radius:10px }
+button { padding:8px 12px; cursor:pointer }
 a { color:#58a6ff; text-decoration:none }
-
-.filters { padding:10px }
-.filters button { margin:3px }
-.active { background:#58a6ff; color:#000 }
-
-.search { padding:10px }
-input { padding:8px; width:100%; border-radius:6px; border:none }
-
-.badge { font-size:12px; padding:3px 6px; border-radius:5px; margin-right:5px }
-.gold { background:gold; color:black }
-.cars { background:#00bcd4 }
-.building { background:#ff9800 }
-.fmcg { background:#4caf50 }
 </style>
 </head>
 
@@ -39,25 +22,16 @@ input { padding:8px; width:100%; border-radius:6px; border:none }
 <button onclick="toggleLang()">EN/AR</button>
 </header>
 
-<div class="search">
-<input type="text" placeholder="ابحث عن خبر..." oninput="searchNews(this.value)">
+<!-- 💰 سعر الذهب -->
+<div style="padding:15px; background:#222">
+<h3>💰 سعر الذهب الآن: <span id="goldPrice">...</span></h3>
+<p id="goldTrend"></p>
 </div>
 
-<div class="filters">
-<button onclick="setFilter('all')" class="active">الكل</button>
-<button onclick="setFilter('fmcg')">FMCG</button>
-<button onclick="setFilter('gold')">ذهب</button>
-<button onclick="setFilter('cars')">سيارات</button>
-<button onclick="setFilter('building')">بناء</button>
-</div>
-
+<!-- 📰 الأخبار -->
 <div class="container" id="news">جاري تحميل الأخبار...</div>
 
 <script>
-
-let allNews = [];
-let currentFilter = "all";
-let searchTerm = "";
 
 function toggleLang(){
 const html = document.documentElement;
@@ -65,49 +39,30 @@ html.lang = html.lang === 'ar' ? 'en' : 'ar';
 html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 }
 
-function setFilter(type){
-currentFilter = type;
-document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
-event.target.classList.add("active");
-renderNews();
+async function fetchGold(){
+try{
+const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/gold");
+const data = await res.json();
+
+document.getElementById("goldPrice").innerText = data.price;
+
+if(data.trend === "up"){
+document.getElementById("goldTrend").innerText = "🔼 السعر طالع";
 }
-
-function searchNews(term){
-searchTerm = term.toLowerCase();
-renderNews();
+else if(data.trend === "down"){
+document.getElementById("goldTrend").innerText = "🔽 السعر نازل";
 }
-
-function detectCategory(title){
-title = title.toLowerCase();
-
-if(title.includes("ذهب")) return "gold";
-if(title.includes("سيارة")) return "cars";
-if(title.includes("حديد") || title.includes("اسمنت")) return "building";
-if(title.includes("شركة") || title.includes("غذائية")) return "fmcg";
-
-return "other";
+else{
+document.getElementById("goldTrend").innerText = "ثابت";
 }
-
-function badge(type){
-if(type==="gold") return '<span class="badge gold">ذهب</span>';
-if(type==="cars") return '<span class="badge cars">سيارات</span>';
-if(type==="building") return '<span class="badge building">بناء</span>';
-if(type==="fmcg") return '<span class="badge fmcg">FMCG</span>';
-return "";
+}catch(e){
+document.getElementById("goldTrend").innerText = "فشل تحميل السعر";
+}
 }
 
 async function fetchNews(){
 try{
-
-const sources = [
-"https://www.skynewsarabia.com/web/rss",
-"https://www.aljazeera.net/aljazeera/rss"
-];
-
-allNews = [];
-
-for(let src of sources){
-const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(src));
+const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://www.skynewsarabia.com/web/rss"));
 const text = await res.text();
 
 const parser = new DOMParser();
@@ -115,49 +70,28 @@ const xml = parser.parseFromString(text, "text/xml");
 
 const items = xml.querySelectorAll("item");
 
-items.forEach(item=>{
+const container = document.getElementById("news");
+container.innerHTML = "";
+
+items.forEach((item, i) => {
+if(i >= 10) return;
+
 const title = item.querySelector("title")?.textContent;
 const link = item.querySelector("link")?.textContent;
 
-allNews.push({
-title,
-link,
-category: detectCategory(title)
-});
-});
-}
-
-renderNews();
-
-}catch(e){
-document.getElementById("news").innerHTML = "❌ فشل تحميل الأخبار";
-console.log(e);
-}
-}
-
-function renderNews(){
-let container = document.getElementById("news");
-container.innerHTML = "";
-
-let filtered = allNews.filter(n=>{
-return (currentFilter==="all" || n.category===currentFilter)
-&& n.title.toLowerCase().includes(searchTerm);
-});
-
-filtered.slice(0,20).forEach(n=>{
 container.innerHTML += `
 <div class="card">
-${badge(n.category)}
-<h3>${n.title}</h3>
-<a href="${n.link}" target="_blank">اقرأ الخبر</a>
+<h3>${title}</h3>
+<a href="${link}" target="_blank">اقرأ الخبر</a>
 </div>`;
 });
 
-if(filtered.length===0){
-container.innerHTML = "لا توجد نتائج";
+}catch(e){
+document.getElementById("news").innerHTML = "فشل تحميل الأخبار";
 }
 }
 
+fetchGold();
 fetchNews();
 
 </script>
