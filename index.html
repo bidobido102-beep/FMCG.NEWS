@@ -1,75 +1,48 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>السوق المصري</title>
-
-<style>
-body { background:#0d1117; color:#fff; font-family:Arial; margin:0 }
-header { background:#161b22; padding:15px }
-.section { padding:15px }
-.card { background:#161b22; padding:10px; margin:10px 0; border-radius:10px }
-h3 { margin:5px 0 }
-</style>
+  <meta charset="UTF-8">
+  <title>FMCG News Egypt</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+    h2 { margin-top: 0; }
+  </style>
 </head>
-
 <body>
 
-<header>
-<h2>📊 السوق المصري</h2>
-</header>
+<h1>🛒 FMCG News & Prices - Egypt</h1>
 
-<div class="section" id="market">جاري التحميل...</div>
+<div class="card" id="prices"></div>
+<div class="card" id="news"></div>
 
 <script>
+fetch("data.json")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("prices").innerHTML = `
+      <h2>📊 الأسعار</h2>
+      <p>🥇 الذهب: ${data.prices.gold}</p>
+      <p>🏗️ الحديد: ${data.prices.steel}</p>
+      <p>🧱 الأسمنت: ${data.prices.cement}</p>
+      <small>آخر تحديث: ${data.lastUpdate}</small>
+    `;
 
-async function loadMarket(){
-
-const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/market");
-const data = await res.json();
-
-const m = data.prices;
-
-document.getElementById("market").innerHTML = `
-
-<div class="card">
-<h3>💰 الذهب</h3>
-عيار 24: ${m.gold["24"]} جنيه<br>
-عيار 21: ${m.gold["21"]} جنيه<br>
-عيار 18: ${m.gold["18"]} جنيه<br>
-الأوقية: ${m.gold.ounce}
-</div>
-
-<div class="card">
-<h3>🏗️ مواد البناء</h3>
-حديد: ${m.iron}<br>
-أسمنت: ${m.cement}
-</div>
-
-<div class="card">
-<h3>🚗 السيارات</h3>
-تويوتا: ${m.cars.toyota}<br>
-هيونداي: ${m.cars.hyundai}
-</div>
-
-<div class="card">
-<h3>🛒 السلع الاستهلاكية</h3>
-كوكاكولا: ${m.fmcg["Coca Cola"]}<br>
-بيبسي: ${m.fmcg["Pepsi"]}<br>
-لبن نستله: ${m.fmcg["Nestle Milk"]}
-</div>
-
-<div class="card">
-<h3>📈 الاتجاه</h3>
-${data.trend === "up" ? "🔼 الأسعار بتزيد" : data.trend === "down" ? "🔽 الأسعار بتقل" : "ثابت"}
-</div>
-
-`;
-
-}
-
-loadMarket();
-
+    let newsHTML = "<h2>📰 أخبار FMCG</h2>";
+    data.news.forEach(n => {
+      newsHTML += `<p>• ${n.title} (${n.source})</p>`;
+    });
+    document.getElementById("news").innerHTML = newsHTML;
+  });
 </script>
 
 </body>
