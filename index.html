@@ -3,19 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>FMCG News Egypt</title>
+
   <style>
     body {
-      font-family: Arial;
-      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
       padding: 20px;
+      direction: rtl;
+    }
+    h1 {
+      color: #1e3a8a;
     }
     .card {
-      background: white;
+      background: #ffffff;
       padding: 15px;
-      margin-bottom: 15px;
       border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    h2 { margin-top: 0; }
+    a {
+      color: #1e40af;
+      text-decoration: none;
+    }
+    small {
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -30,20 +42,15 @@ fetch("data.json")
   .then(res => res.json())
   .then(data => {
     document.getElementById("prices").innerHTML = `
-      <h2>📊 الأسعار</h2>
+      <h2>📊 أسعار السلع</h2>
       <p>🥇 الذهب: ${data.prices.gold}</p>
       <p>🏗️ الحديد: ${data.prices.steel}</p>
       <p>🧱 الأسمنت: ${data.prices.cement}</p>
-      <small>آخر تحديث: ${data.lastUpdate}</small>
+      <small>آخر تحديث: ${new Date(data.lastUpdate).toLocaleString()}</small>
     `;
 
     let newsHTML = "<h2>📰 أخبار FMCG</h2>";
     data.news.forEach(n => {
-      newsHTML += `<p>• ${n.title} (${n.source})</p>`;
-    });
-    document.getElementById("news").innerHTML = newsHTML;
-  });
-</script>
-
-</body>
-</html>
+      newsHTML += `
+        <p>
+          • <a href="${n.link}" target="_         <small>${n.source}</small>
