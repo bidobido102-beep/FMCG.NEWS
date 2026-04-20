@@ -1,84 +1,174 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>FMCG News Digest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Egypt Market Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body {
-  font-family: Arial;
-  background: #f4f6f8;
-  direction: rtl;
-  padding: 20px;
+  background:#0d1117;
+  color:#fff;
+  font-family:Arial;
+  margin:0;
 }
+
+header {
+  background:#161b22;
+  padding:15px;
+  text-align:center;
+}
+
+.container {
+  padding:15px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
 .card {
-  background: white;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
+  background:#161b22;
+  padding:15px;
+  border-radius:10px;
 }
-.company {
-  font-weight: bold;
-  color: #1e40af;
+
+.big {
+  font-size:22px;
+  margin-top:10px;
 }
-.badge {
-  background: #d32f2f;
-  color: white;
-  padding: 2px 6px;
-  font-size: 12px;
-  border-radius: 4px;
+
+canvas {
+  background:#fff;
+  border-radius:10px;
+  margin-top:10px;
 }
-small {
-  color: #666;
-}
-a {
-  color: #1e40af;
-  text-decoration: none;
+
+#analysis {
+  background:#222;
+  padding:15px;
+  margin-top:15px;
+  border-radius:10px;
 }
 </style>
+
 </head>
 
 <body>
 
-<h1>📰 FMCG News Digest</h1>
-<p id="time"></p>
+<header>
+<h2>📊 السوق المصري - Dashboard</h2>
+<button onclick="load()">🔄 تحديث</button>
+</header>
 
-<div id="feed">⏳ جاري التحميل...</div>
+<div class="container">
+
+<!-- كروت -->
+<div class="grid">
+<div class="card">
+<h3>💰 الذهب (عيار 21)</h3>
+<div id="goldPrice" class="big">...</div>
+</div>
+
+<div class="card">
+<h3>🏗️ الحديد</h3>
+<div id="ironPrice" class="big">...</div>
+</div>
+</div>
+
+<!-- Charts -->
+<h3>📈 تطور الذهب</h3>
+<canvas id="goldChart"></canvas>
+
+<h3>📈 تطور الحديد</h3>
+<canvas id="ironChart"></canvas>
+
+<!-- AI تحليل -->
+<div id="analysis"></div>
+
+</div>
 
 <script>
-const API = "https://fmcg-api-production-5e80.up.railway.app/api/data";
 
-fetch(API)
-  .then(r => r.json())
-  .then(data => {
+let goldChart, ironChart;
+let lastGold = null;
 
-    document.getElementById("time").innerText =
-      "آخر تحديث: " + data.updated;
+// 🔹 AI تحليل بسيط
+function analyze(data){
+  if(data.gold21 > 7000){
+    return "📈 السوق في اتجاه صاعد بسبب ارتفاع الذهب";
+  }
+  if(data.iron > 45000){
+    return "🏗️ قطاع البناء تحت ضغط بسبب زيادة الحديد";
+  }
+  return "⚖️ السوق مستقر حالياً";
+}
 
-    let html = "";
+// 🔔 تنبيهات
+function checkAlert(price){
+  if(lastGold && price > lastGold){
+    alert("🔼 الذهب طلع!");
+  }
+  if(lastGold && price < lastGold){
+    alert("🔽 الذهب نزل!");
+  }
+  lastGold = price;
+}
 
-    data.news.forEach(n => {
-      html += `
-        <div class="card">
-          <strong>${n.title}</strong>
-          <p>${n.summary}</p>
+// 🚀 تحميل البيانات
+async function load(){
 
-          ${n.company ? `<div class="company">🏢 ${n.company}</div>` : ""}
+  const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/full");
+  const data = await res.json();
 
-          ${n.priceImpact ? `<span class="badge">تأثير سعري</span>` : ""}
-          <br><br>
-          <small>📌 المصدر: ${n.source}</small><br>
-          ${n.link}اقرأ الخبر</a>
-        </div>
-      `;
-    });
+  // عرض الأسعار
+  document.getElementById("goldPrice").innerText = data.gold21 + " جنيه";
+  document.getElementById("ironPrice").innerText = data.iron + " جنيه";
 
-    document.getElementById("feed").innerHTML = html;
-  })
-  .catch(() => {
-    document.getElementById("feed").innerText =
-      "❌ خطأ في تحميل الأخبار";
+  // تنبيه
+  checkAlert(data.gold21);
+
+  // تحليل
+  document.getElementById("analysis").innerText = analyze(data);
+
+  // رسم الذهب
+  if(goldChart) goldChart.destroy();
+  goldChart = new Chart(document.getElementById("goldChart"), {
+    type: 'line',
+    data: {
+      labels: data.history.gold.map((_,i)=>i),
+      datasets: [{
+        label: 'ذهب 21',
+        data: data.history.gold
+      }]
+    }
   });
+
+  // رسم الحديد
+  if(ironChart) ironChart.destroy();
+  ironChart = new Chart(document.getElementById("ironChart"), {
+    type: 'line',
+    data: {
+      labels: data.history.iron.map((_,i)=>i),
+      datasets: [{
+        label: 'حديد',
+        data: data.history.iron
+      }]
+    }
+  });
+
+}
+
+// تشغيل أول مرة
+load();
+
+// ⏱️ تحديث تلقائي كل 60 ثانية
+setInterval(load, 60000);
+
 </script>
 
 </body>
