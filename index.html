@@ -2,16 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Egypt Market Intelligence</title>
+<title>السوق المصري</title>
 
 <style>
-body { font-family: Arial; background:#0d1117; color:#fff; margin:0 }
-header { background:#161b22; padding:15px; display:flex; justify-content:space-between }
-.container { padding:20px }
-.card { background:#161b22; padding:15px; margin-bottom:10px; border-radius:10px }
-button { padding:8px 12px; cursor:pointer }
-a { color:#58a6ff; text-decoration:none }
+body { background:#0d1117; color:#fff; font-family:Arial; margin:0 }
+header { background:#161b22; padding:15px }
+.section { padding:15px }
+.card { background:#161b22; padding:10px; margin:10px 0; border-radius:10px }
+h3 { margin:5px 0 }
 </style>
 </head>
 
@@ -19,80 +17,58 @@ a { color:#58a6ff; text-decoration:none }
 
 <header>
 <h2>📊 السوق المصري</h2>
-<button onclick="toggleLang()">EN/AR</button>
 </header>
 
-<!-- 💰 سعر الذهب -->
-<div style="padding:15px; background:#222">
-<h3>💰 سعر الذهب الآن: <span id="goldPrice">...</span></h3>
-<p id="goldTrend"></p>
-</div>
-
-<!-- 📰 الأخبار -->
-<div class="container" id="news">جاري تحميل الأخبار...</div>
+<div class="section" id="market">جاري التحميل...</div>
 
 <script>
 
-function toggleLang(){
-const html = document.documentElement;
-html.lang = html.lang === 'ar' ? 'en' : 'ar';
-html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
-}
+async function loadMarket(){
 
-async function fetchGold(){
-try{
-const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/gold");
+const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/market");
 const data = await res.json();
 
-document.getElementById("goldPrice").innerText = data.price;
+const m = data.prices;
 
-if(data.trend === "up"){
-document.getElementById("goldTrend").innerText = "🔼 السعر طالع";
-}
-else if(data.trend === "down"){
-document.getElementById("goldTrend").innerText = "🔽 السعر نازل";
-}
-else{
-document.getElementById("goldTrend").innerText = "ثابت";
-}
-}catch(e){
-document.getElementById("goldTrend").innerText = "فشل تحميل السعر";
-}
-}
+document.getElementById("market").innerHTML = `
 
-async function fetchNews(){
-try{
-const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://www.skynewsarabia.com/web/rss"));
-const text = await res.text();
-
-const parser = new DOMParser();
-const xml = parser.parseFromString(text, "text/xml");
-
-const items = xml.querySelectorAll("item");
-
-const container = document.getElementById("news");
-container.innerHTML = "";
-
-items.forEach((item, i) => {
-if(i >= 10) return;
-
-const title = item.querySelector("title")?.textContent;
-const link = item.querySelector("link")?.textContent;
-
-container.innerHTML += `
 <div class="card">
-<h3>${title}</h3>
-<a href="${link}" target="_blank">اقرأ الخبر</a>
-</div>`;
-});
+<h3>💰 الذهب</h3>
+عيار 24: ${m.gold["24"]} جنيه<br>
+عيار 21: ${m.gold["21"]} جنيه<br>
+عيار 18: ${m.gold["18"]} جنيه<br>
+الأوقية: ${m.gold.ounce}
+</div>
 
-}catch(e){
-document.getElementById("news").innerHTML = "فشل تحميل الأخبار";
-}
+<div class="card">
+<h3>🏗️ مواد البناء</h3>
+حديد: ${m.iron}<br>
+أسمنت: ${m.cement}
+</div>
+
+<div class="card">
+<h3>🚗 السيارات</h3>
+تويوتا: ${m.cars.toyota}<br>
+هيونداي: ${m.cars.hyundai}
+</div>
+
+<div class="card">
+<h3>🛒 السلع الاستهلاكية</h3>
+كوكاكولا: ${m.fmcg["Coca Cola"]}<br>
+بيبسي: ${m.fmcg["Pepsi"]}<br>
+لبن نستله: ${m.fmcg["Nestle Milk"]}
+</div>
+
+<div class="card">
+<h3>📈 الاتجاه</h3>
+${data.trend === "up" ? "🔼 الأسعار بتزيد" : data.trend === "down" ? "🔽 الأسعار بتقل" : "ثابت"}
+</div>
+
+`;
+
 }
 
-fetchGold();
-fetchNews();
+loadMarket();
 
 </script>
 
