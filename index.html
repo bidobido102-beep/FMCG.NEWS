@@ -20,7 +20,7 @@ body {
 }
 
 .badge {
-  background: red;
+  background: #d32f2f;
   color: white;
   padding: 2px 6px;
   font-size: 12px;
@@ -43,65 +43,61 @@ small {
 
 <h1>🛒 FMCG News Egypt</h1>
 
-<!-- ===== أسعار ===== -->
+<!-- ===== Market Prices ===== -->
 <div class="card">
-  <h2>📊 أسعار السلع اليوم</h2>
+  <h2>📊 اتجاهات الأسعار اليوم</h2>
 
-  <p><strong>🥇 الذهب</strong></p>
-  <ul id="gold"></ul>
-
-  <p><strong>🏗️ الحديد</strong></p>
-  <p id="steel"></p>
-
-  <p><strong>🧱 الأسمنت</strong></p>
-  <p id="cement"></p>
+  <p>🥇 <strong>الذهب:</strong> <span id="gold"></span></p>
+  <p>🏗️ <strong>الحديد:</strong> <span id="steel"></span></p>
+  <p>🧱 <strong>الأسمنت:</strong> <span id="cement"></span></p>
 
   <small id="priceDate"></small>
 </div>
 
-<!-- ===== حالة التحميل ===== -->
+<!-- ===== Status ===== -->
 <p id="status">⏳ جاري تحميل الأخبار...</p>
 
-<!-- ===== الأخبار ===== -->
+<!-- ===== News ===== -->
 <div id="news"></div>
 
 <script>
-const API =
-  "https://fmcg-api-production-5e80.up.railway.app/api/data";
+const API = "https://fmcg-api-production-5e80.up.railway.app/api/data";
 
 fetch(API)
   .then(res => res.json())
   .then(data => {
 
-    /* ===== الأسعار ===== */
-    let goldHTML = "";
-    for (let k in data.prices.gold) {
-      goldHTML += `<li>${k}: ${data.prices.gold[k]}</li>`;
-    }
-    document.getElementById("gold").innerHTML = goldHTML;
-    document.getElementById("steel").innerText = data.prices.steel;
-    document.getElementById("cement").innerText = data.prices.cement;
+    // ===== Prices =====
+    document.getElementById("gold").innerText =
+      data.prices.gold.trend + " – " + data.prices.gold.note;
+
+    document.getElementById("steel").innerText =
+      data.prices.steel.trend + " – " + data.prices.steel.note;
+
+    document.getElementById("cement").innerText =
+      data.prices.cement.trend + " – " + data.prices.cement.note;
+
     document.getElementById("priceDate").innerText =
       "آخر تحديث: " + data.prices.lastUpdate;
 
-    /* ===== الأخبار ===== */
+    // ===== News =====
     document.getElementById("status").innerText =
-      "✅ تم تحميل الأخبار";
+      "✅ آخر أخبار FMCG";
 
     let html = "";
     data.news.forEach(n => {
       html += `
         <div class="card">
-          <a href="${n.link}" target="_blank${n.priceIncrease ? '<span class="badge">زيادة أسعار</span>' : ''}
+          ${n.link}${n.title}</a>
+          ${n.priceIncrease ? '<span class="badge">زيادة أسعار</span>' : ''}
           <br>
           <small>${n.source}</small>
-        </div>
-      `;
+        </div>`;
     });
+
     document.getElementById("news").innerHTML = html;
   })
-  .catch(err => {
-    console.error(err);
+  .catch(() => {
     document.getElementById("status").innerText =
       "❌ فشل تحميل الأخبار";
   });
