@@ -5,45 +5,80 @@
 <title>FMCG News Digest</title>
 
 <style>
-body { font-family: Arial; background:#f4f6f8; direction:rtl; padding:20px }
-.card { background:#fff; padding:15px; margin-bottom:12px; border-radius:8px }
-.badge { background:#e53935; color:#fff; padding:2px 6px; font-size:12px }
-.company { color:#1e40af; font-weight: bold }
-small { color:#666 }
+body {
+  font-family: Arial;
+  background: #f4f6f8;
+  direction: rtl;
+  padding: 20px;
+}
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+.company {
+  font-weight: bold;
+  color: #1e40af;
+}
+.badge {
+  background: #d32f2f;
+  color: white;
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+small {
+  color: #666;
+}
+a {
+  color: #1e40af;
+  text-decoration: none;
+}
 </style>
 </head>
+
 <body>
 
 <h1>📰 FMCG News Digest</h1>
 <p id="time"></p>
 
-<div id="feed">جاري التحميل...</div>
+<div id="feed">⏳ جاري التحميل...</div>
 
 <script>
-fetch("https://fmcg-api-production-5e80.up.railway.app/api/data")
-.then(r => r.json())
-.then(data => {
-  document.getElementById("time").innerText =
-    "آخر تحديث: " + data.updated;
+const API = "https://fmcg-api-production-5e80.up.railway.app/api/data";
 
-  let html = "";
-  data.news.forEach(n => {
-    html += `
-      <div class="card">
-        <div>${n.title}</div>
-        <p>${n.summary}</p>
+fetch(API)
+  .then(r => r.json())
+  .then(data => {
 
-        ${n.company ? `<div class="company">🏢 ${n.company}</div>` : ""}
+    document.getElementById("time").innerText =
+      "آخر تحديث: " + data.updated;
 
-        ${n.priceImpact ? `<span class="badge">تأثير سعري</span>` : ""}
-        <br>
-        <small>📌 المصدر: ${n.source}</small>
-        <br>
-        <a href="${n.link}" target    </div>
-    `;
+    let html = "";
+
+    data.news.forEach(n => {
+      html += `
+        <div class="card">
+          <strong>${n.title}</strong>
+          <p>${n.summary}</p>
+
+          ${n.company ? `<div class="company">🏢 ${n.company}</div>` : ""}
+
+          ${n.priceImpact ? `<span class="badge">تأثير سعري</span>` : ""}
+          <br><br>
+          <small>📌 المصدر: ${n.source}</small><br>
+          ${n.link}اقرأ الخبر</a>
+        </div>
+      `;
+    });
+
+    document.getElementById("feed").innerHTML = html;
+  })
+  .catch(() => {
+    document.getElementById("feed").innerText =
+      "❌ خطأ في تحميل الأخبار";
   });
-  document.getElementById("feed").innerHTML = html;
-});
 </script>
 
 </body>
