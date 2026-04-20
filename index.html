@@ -2,58 +2,133 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>Market Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Dashboard Egypt</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body { background:#0d1117; color:#fff; font-family:Arial; margin:0 }
-header { background:#161b22; padding:15px }
-.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:10px }
-.card { background:#161b22; padding:15px; border-radius:10px }
-h3 { margin:0 0 10px }
-.big { font-size:24px }
+header { background:#161b22; padding:15px; display:flex; justify-content:space-between }
+.container { padding:15px }
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.card {
+  background:#161b22;
+  padding:15px;
+  border-radius:10px;
+}
+
+.big { font-size:22px; margin-top:10px }
+
+canvas { background:#fff; border-radius:10px; margin-top:15px }
+
+.news-card {
+  background:#161b22;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+}
+
+a { color:#58a6ff; text-decoration:none }
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>📊 Market Dashboard</h2>
+<h2>📊 السوق المصري</h2>
+<button onclick="location.reload()">🔄 تحديث</button>
 </header>
 
-<div class="grid" id="data"></div>
+<div class="container">
+
+<!-- 📊 الكروت -->
+<div class="grid" id="cards"></div>
+
+<!-- 📈 الرسم البياني -->
+<canvas id="chart"></canvas>
+
+<!-- 📰 الأخبار -->
+<h3>📰 أخبار السوق</h3>
+<div id="news"></div>
+
+</div>
 
 <script>
 
-async function load(){
+// 🔹 تحميل البيانات
+async function loadDashboard(){
+
 const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/dashboard");
 const json = await res.json();
 
 const d = json.data;
+const history = json.history;
 
-document.getElementById("data").innerHTML = `
+// 🟢 الكروت
+document.getElementById("cards").innerHTML = `
 <div class="card">
 <h3>💰 ذهب 21</h3>
-<div class="big">${d.gold["21"]} جنيه</div>
-</div>
-
-<div class="card">
-<h3>🏗️ حديد</h3>
-<div class="big">${d.iron}</div>
-</div>
-
-<div class="card">
-<h3>🚗 سيارات</h3>
-<div class="big">${d.cars}</div>
-</div>
-
-<div class="card">
-<h3>🛒 FMCG</h3>
-<div class="big">${d.fmcg}</div>
+<div class="big">${d.gold21} جنيه</div>
 </div>
 `;
+
+// 🟢 الرسم البياني
+const labels = history.map(h => h.time);
+const prices = history.map(h => h.price);
+
+new Chart(document.getElementById("chart"), {
+type: 'line',
+data: {
+labels: labels,
+datasets: [{
+label: 'سعر الذهب 21',
+data: prices
+}]
+}
+});
+
 }
 
-load();
+// 🔹 الأخبار
+async function loadNews(){
+
+const res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://www.skynewsarabia.com/web/rss"));
+const text = await res.text();
+
+const parser = new DOMParser();
+const xml = parser.parseFromString(text, "text/xml");
+
+const items = xml.querySelectorAll("item");
+
+const container = document.getElementById("news");
+
+items.forEach((item, i) => {
+if(i >= 5) return;
+
+const title = item.querySelector("title")?.textContent;
+const link = item.querySelector("link")?.textContent;
+
+container.innerHTML += `
+<div class="news-card">
+<h4>${title}</h4>
+<a href="${link}" target="_blank">اقرأ الخبر</a>
+</div>
+`;
+});
+
+}
+
+// تشغيل
+loadDashboard();
+loadNews();
+
 </script>
 
 </body>
