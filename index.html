@@ -1,140 +1,64 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>FMCG News & Prices | Egypt</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="متابعة أخبار FMCG وزيادات الأسعار في مصر – الذهب، الحديد، الأسمنت والشركات الكبرى" />
-
-  <style>
-    body {
-      font-family: Arial, Tahoma, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
-      direction: rtl;
-    }
-
-    header {
-      background: #1e3a8a;
-      color: white;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .card {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #1e40af;
-    }
-
-    a {
-      color: #1e40af;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .loading {
-      color: #666;
-      font-size: 14px;
-    }
-
-    small {
-      color: #555;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      color: #777;
-      font-size: 13px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>FMCG News Egypt</title>
+<style>
+body{font-family:Arial;background:#f4f6f8;direction:rtl;padding:20px}
+.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:8px}
+.badge{color:white;background:red;padding:2px 6px;font-size:12px;border-radius:4px}
+button{margin:5px}
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <h1>🛒 FMCG News & Prices – Egypt</h1>
-      <p style="margin:5px 0 0;">آخر أخبار السلع وزيادات الأسعار في مصر</p>
-    </header>
+<h1>🛒 FMCG News Egypt</h1>
+<button onclick="setLang('ar')">عربي</button>
+<button onclick="setLang('en')">English</button>
 
-    <div class="card" id="prices">
-      <p class="loading">⏳ جاري تحميل الأسعار...</p>
-    </div>
+<div>
+  <button onclick="filter('All')">الكل</button>
+  <button onclick="filter('Companies')">شركات</button>
+  <button onclick="filter('Products')">سلع</button>
+  <button onclick="filter('Market')">سوق</button>
+</div>
 
-    <div class="card" id="news">
-      <p class="loading">⏳ جاري تحميل أخبار FMCG...</p>
-    </div>
-
-    <footer>
-      <p>الموقع تجريبي – بيانات مجانية من مصادر عامة</p>
-    </footer>
-  </div>
+<div id="news"></div>
 
 <script>
-  // ⚠️ غيّر الرابط ده لرابط Railway بتاعك
-  const API_URL = "https://YOUR-APP-NAME.up.railway.app/api/data";
+let lang = "ar";
+let allNews = [];
 
-  fetch(API_URL)
-    .then(response => response.json())
-    .then(data => {
-      // ====== أسعار ======
-      document.getElementById("prices").innerHTML = `
-        <h2>📊 أسعار السلع</h2>
-        <p>🥇 <strong>الذهب:</strong> ${data.prices.gold}</p>
-        <p>🏗️ <strong>الحديد:</strong> ${data.prices.steel}</p>
-        <p>🧱 <strong>الأسمنت:</strong> ${data.prices.cement}</p>
-        <small>آخر تحديث: ${new Date(data.lastUpdate).toLocaleString()}</small>
-      `;
+const API = "https://fmcg-api-production-5e80.up.railway.app/api/data";
 
-      // ====== أخبار ======
-      let newsHTML = "<h2>📰 أخبار FMCG</h2>";
+fetch(API).then(r=>r.json()).then(data=>{
+  allNews = data.news;
+  render(allNews);
+});
 
-      if (!data.news || data.news.length === 0) {
-        newsHTML += "<p>لا توجد أخبار حالياً</p>";
-      } else {
-        data.news.forEach(item => {
-          newsHTML += `
-            <p>
-              • ${item.link}${item.title}</a><br>
-              <small>${item.source}</small>
-            </p>
-          `;
-        });
-      }
+function filter(cat){
+  if(cat==="All") render(allNews);
+  else render(allNews.filter(n=>n.category===cat));
+}
 
-      document.getElementById("news").innerHTML = newsHTML;
-    })
-    .catch(err => {
-      document.getElementById("prices").innerHTML =
-        "<p>❌ حدث خطأ في تحميل البيانات</p>";
-      document.getElementById("news").innerHTML =
-        "<p>❌ تأكد من رابط Railway</p>";
-      console.error(err);
-    });
+function setLang(l){
+  lang = l;
+  render(allNews);
+}
+
+function render(news){
+  let html="";
+  news.forEach(n=>{
+    html+=`
+    <div class="card">
+      ${n.link}${n.title}</a>
+      ${n.priceIncrease?'<span class="badge">زيادة أسعار</span>':''}
+      <br>
+      <small>${n.source} | ${n.category}</small>
+    </div>`;
+  });
+  document.getElementById("news").innerHTML = html;
+}
 </script>
 
 </body>
