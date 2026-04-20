@@ -3,61 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <title>FMCG News Egypt</title>
+
 <style>
-body{font-family:Arial;background:#f4f6f8;direction:rtl;padding:20px}
-.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:8px}
-.badge{color:white;background:red;padding:2px 6px;font-size:12px;border-radius:4px}
-button{margin:5px}
+body{
+  font-family:Arial;
+  background:#f4f6f8;
+  direction:rtl;
+  padding:20px
+}
+.card{
+  background:#fff;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:8px
+}
+.badge{
+  color:white;
+  background:red;
+  padding:2px 6px;
+  font-size:12px;
+  border-radius:4px;
+  margin-right:5px
+}
+button{margin:4px}
+.error{color:red}
 </style>
 </head>
+
 <body>
 
 <h1>🛒 FMCG News Egypt</h1>
-<button onclick="setLang('ar')">عربي</button>
-<button onclick="setLang('en')">English</button>
 
 <div>
-  <button onclick="filter('All')">الكل</button>
-  <button onclick="filter('Companies')">شركات</button>
-  <button onclick="filter('Products')">سلع</button>
-  <button onclick="filter('Market')">سوق</button>
+  <button onclick="filterCat('All')">الكل</button>
+  <button onclick="filterCat('Companies')">شركات</button>
+  <button onclick="filterCat('Products')">سلع</button>
+  <button onclick="filterCat('Market')">سوق</button>
 </div>
 
+<p id="status">⏳ جاري تحميل الأخبار…</p>
 <div id="news"></div>
 
 <script>
-let lang = "ar";
+const API_URL =
+  "https://fmcg-api-production-5e80.up.railway.app/api/data";
+
 let allNews = [];
 
-const API = "https://fmcg-api-production-5e80.up.railway.app/api/data";
+// ===== تحميل البيانات =====
+fetch(API_URL)
+  .then(res => {
+    if(!res.ok) throw new Error("API error");
+    return res.json();
+  })
+  .then(data => {
+    document.getElementById("status").innerText =
+      "✅ تم تحميل الأخبار";
+    allNews = data.news;
+    render(allNews);
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("status").innerHTML =
+      "<span class='error'>❌ خطأ في تحميل الأخبار</span>";
+  });
 
-fetch(API).then(r=>r.json()).then(data=>{
-  allNews = data.news;
-  render(allNews);
-});
-
-function filter(cat){
-  if(cat==="All") render(allNews);
-  else render(allNews.filter(n=>n.category===cat));
-}
-
-function setLang(l){
-  lang = l;
-  render(allNews);
-}
-
-function render(news){
-  let html="";
-  news.forEach(n=>{
-    html+=`
-    <div class="card">
-      ${n.link}${n.title}</a>
-      ${n.priceIncrease?'<span class="badge">زيادة أسعار</span>':''}
-      <br>
-      <small>${n.source} | ${n.category}</small>
-    </div>`;
+// ===== عرض الأخبار =====
+function render(list){
+  let html = "";
+  if(list.length === 0){
+    html = "<p>لا توجد أخبار حاليًا</p>";
+  }
+  list.forEach(n=>{
+    html += `
+      <div class="card">
+        <a href="${n.link}" target="_   ${n.priceIncrease ? '<span class="badge">زيادة أسعار</span>' : ''}
+        <br>
+        <small>${n.source} | ${n.category}</small>
+      </div>
+    `;
   });
   document.getElementById("news").innerHTML = html;
+}
+
+// ===== فلترة =====
+function filterCat(cat){
+  if(cat === "All"){
+    render(allNews);
+  } else {
+    render(allNews.filter(n => n.category === cat));
+  }
 }
 </script>
 
