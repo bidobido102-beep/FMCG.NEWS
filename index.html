@@ -2,176 +2,48 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>FMCG Market Dashboard – Egypt</title>
+<title>FMCG News Digest</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #f2f4f7;
-  direction: rtl;
-  margin: 0;
-  padding: 20px;
-}
-
-h1 {
-  margin-bottom: 20px;
-}
-
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.trend-up { color: green; font-weight: bold; }
-.trend-down { color: red; font-weight: bold; }
-.trend-flat { color: orange; font-weight: bold; }
-
-.alert {
-  background: #fff3cd;
-  border-right: 4px solid #ffc107;
-  padding: 10px;
-  margin-bottom: 8px;
-}
-
-.company {
-  border-bottom: 1px solid #eee;
-  padding: 8px 0;
-}
-
-a {
-  text-decoration: none;
-  color: #1e40af;
-}
-
-small {
-  color: #666;
-}
+body { font-family: Arial; background:#f4f6f8; direction:rtl; padding:20px }
+.card { background:#fff; padding:15px; margin-bottom:12px; border-radius:8px }
+.badge { background:#e53935; color:#fff; padding:2px 6px; font-size:12px }
+.company { color:#1e40af; font-weight: bold }
+small { color:#666 }
 </style>
 </head>
-
 <body>
 
-<h1>📊 FMCG Market Dashboard – Egypt</h1>
+<h1>📰 FMCG News Digest</h1>
+<p id="time"></p>
 
-<div class="dashboard">
-
-  <!-- ================= Market Trends ================= -->
-  <div class="card">
-    <h3>📈 اتجاهات الأسعار</h3>
-    <p>🥇 الذهب: <span id="gold"></span></p>
-    <p>🏗️ الحديد: <span id="steel"></span></p>
-    <p>🧱 الأسمنت: <span id="cement"></span></p>
-    <small id="dates"></small>
-  </div>
-
-  <!-- ================= Price Alerts ================= -->
-  <div class="card">
-    <h3>🚨 تنبيهات زيادات الأسعار</h3>
-    <div id="alerts">جاري التحميل...</div>
-  </div>
-
-  <!-- ================= Company Monitor ================= -->
-  <div class="card">
-    <h3>🏢 متابعة الشركات</h3>
-    <div id="companies">جاري التحميل...</div>
-  </div>
-
-  <!-- ================= News Feed ================= -->
-  <div class="card">
-    <h3>📰 آخر أخبار FMCG</h3>
-    <div id="news">جاري التحميل...</div>
-  </div>
-
-</div>
+<div id="feed">جاري التحميل...</div>
 
 <script>
-const API = "https://fmcg-api-production-5e80.up.railway.app/api/data";
+fetch("https://fmcg-api-production-5e80.up.railway.app/api/data")
+.then(r => r.json())
+.then(data => {
+  document.getElementById("time").innerText =
+    "آخر تحديث: " + data.updated;
 
-fetch(API)
-  .then(r => r.json())
-  .then(data => {
+  let html = "";
+  data.news.forEach(n => {
+    html += `
+      <div class="card">
+        <div>${n.title}</div>
+        <p>${n.summary}</p>
 
-    /* ========== Prices ========= */
-    document.getElementById("gold").innerHTML =
-      `<span class="trend-up">${data.prices.gold.trend}</span><br>
-       <small>${data.prices.gold.note}</small>`;
+        ${n.company ? `<div class="company">🏢 ${n.company}</div>` : ""}
 
-    document.getElementById("steel").innerHTML =
-      `<span class="trend-up">${data.prices.steel.trend}</span><br>
-       <small>${data.prices.steel.note}</small>`;
-
-    document.getElementById("cement").innerHTML =
-      `<span class="trend-flat">${data.prices.cement.trend}</span><br>
-       <small>${data.prices.cement.note}</small>`;
-
-    document.getElementById("dates").innerText =
-      "آخر تحديث: " + data.prices.lastUpdate;
-
-    /* ========== Alerts ========= */
-    let alertsHTML = "";
-    data.news.forEach(n => {
-      if (n.priceIncrease) {
-        alertsHTML += `
-          <div class="alert">
-            🔺 ${n.title}
-            <br><small>${n.source}</small>
-          </div>`;
-      }
-    });
-    document.getElementById("alerts").innerHTML =
-      alertsHTML || "لا توجد تنبيهات حالياً";
-
-    /* ========== Company Monitor ========= */
-    const companyMap = {};
-    data.news.forEach(n => {
-      const text = n.title.toLowerCase();
-      let name = null;
-      if (text.includes("coca")) name = "Coca‑Cola";
-      else if (text.includes("pepsi")) name = "Pepsi";
-      else if (text.includes("edita")) name = "Edita";
-      else if (text.includes("chipsy")) name = "Chipsy";
-      else if (text.includes("tobacco")) name = "Eastern Company";
-      else if (text.includes("mansour")) name = "Al Mansour";
-
-      if (name && !companyMap[name]) {
-        companyMap[name] = n;
-      }
-    });
-
-    let compHTML = "";
-    for (let c in companyMap) {
-      compHTML += `
-        <div class="company">
-          <strong>${c}</strong><br>
-          <small>${companyMap[c].title}</small>
-        </div>`;
-    }
-    document.getElementById("companies").innerHTML =
-      compHTML || "لا توجد أخبار شركات اليوم";
-
-    /* ========== News ========= */
-    let newsHTML = "";
-    data.news.slice(0, 8).forEach(n => {
-      newsHTML += `
-        <div class="company">
-          <a href="${n.linke}</a><br>
-          <small>${n.source}</small>
-        </div>`;
-    });
-    document.getElementById("news").innerHTML = newsHTML;
-
-  })
-  .catch(() => {
-    alert("خطأ في الاتصال بالـ API");
+        ${n.priceImpact ? `<span class="badge">تأثير سعري</span>` : ""}
+        <br>
+        <small>📌 المصدر: ${n.source}</small>
+        <br>
+        <a href="${n.link}" target    </div>
+    `;
   });
+  document.getElementById("feed").innerHTML = html;
+});
 </script>
 
 </body>
