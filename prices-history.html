@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>أرشيف الأسعار</title>
+<script src="prices-history.js"></script>
+<style>
+body{font-family:Arial;background:#111;color:#fff;padding:20px}
+.card{background:#1e1e1e;padding:15px;margin-bottom:10px;border-radius:8px}
+</style>
+</head>
+<body>
+
+<h2>📊 أرشيف الأسعار</h2>
+<div id="history"></div>
+
+<script>
+const c = document.getElementById("history");
+PRICE_HISTORY.forEach(d=>{
+  c.innerHTML += `
+    <div class="card">
+      <strong>📅 ${d.date}</strong><br>
+      🥇 ذهب 21: ${d.gold21}<br>
+      🏗️ حديد: ${d.steel}<br>
+      🧱 أسمنت: ${d.cement}
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
