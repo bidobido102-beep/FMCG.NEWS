@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>زيادات الأسعار</title>
+<script src="price-alerts.js"></script>
+<style>
+body{font-family:Arial;background:#111;color:#fff;padding:20px}
+.card{background:#1e1e1e;padding:15px;margin-bottom:10px;border-radius:8px}
+small{color:#aaa}
+</style>
+</head>
+<body>
+
+<h2>🚨 آخر زيادات الأسعار</h2>
+<div id="alerts"></div>
+
+<script>
+const div=document.getElementById("alerts");
+PRICE_ALERTS.forEach(a=>{
+  div.innerHTML+=`
+    <div class="card">
+      <h3>${a.title}</h3>
+      <small>${a.category} | ${a.source}</small><br>
+      <small>📅 ${a.date}</small>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
