@@ -44,6 +44,8 @@
 
     small {
       color: #aaa;
+      display: block;
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -63,20 +65,21 @@
     <p>عيار 21: <span id="g21"></span></p>
     <p>عيار 18: <span id="g18"></span></p>
     <p>جنيه ذهب: <span id="gp"></span></p>
+    <small id="goldSource"></small>
   </div>
 
   <!-- ===== الحديد ===== -->
   <div class="card">
     <h3>🏗️ أسعار الحديد</h3>
     <p class="price" id="steel"></p>
-    <small id="steelNote"></small>
+    <small id="steelSource"></small>
   </div>
 
   <!-- ===== الأسمنت ===== -->
   <div class="card">
     <h3>🧱 أسعار الأسمنت</h3>
     <p class="price" id="cement"></p>
-    <small id="cementNote"></small>
+    <small id="cementSource"></small>
   </div>
 
   <!-- ===== شركات FMCG ===== -->
@@ -85,6 +88,7 @@
     <p>كوكاكولا: <span id="coca"></span></p>
     <p>بيبسي: <span id="pepsi"></span></p>
     <p>إيديتا: <span id="edita"></span></p>
+    <small>المصدر: Enterprise / البيانات الصحفية</small>
   </div>
 
   <!-- ===== السجائر ===== -->
@@ -92,6 +96,7 @@
     <h3>🚬 أسعار السجائر</h3>
     <p>كليوباترا: <span id="cleo"></span></p>
     <p>مارلبورو: <span id="marl"></span></p>
+    <small id="cigSource"></small>
   </div>
 
   <!-- ===== تاريخ التحديث ===== -->
@@ -107,31 +112,17 @@
   document.getElementById("g21").innerText = PRICES.gold["21"];
   document.getElementById("g18").innerText = PRICES.gold["18"];
   document.getElementById("gp").innerText  = PRICES.gold.pound;
+  document.getElementById("goldSource").innerText =
+    "المصدر: " + PRICES.gold.source;
 
   // ===== الحديد =====
   document.getElementById("steel").innerText = PRICES.steel.value;
-  document.getElementById("steelNote").innerText = PRICES.steel.note;
+  document.getElementById("steelSource").innerText =
+    "المصدر: " + PRICES.steel.source;
 
   // ===== الأسمنت =====
   document.getElementById("cement").innerText = PRICES.cement.value;
-  document.getElementById("cementNote").innerText = PRICES.cement.note;
+  document.getElementById("cementSource").innerText =
+    "المصدر: " + PRICES.cement.source;
 
   // ===== شركات FMCG =====
-  document.getElementById("coca").innerText = PRICES.companies.cocaCola;
-  document.getElementById("pepsi").innerText = PRICES.companies.pepsi;
-  document.getElementById("edita").innerText = PRICES.companies.edita;
-
-  // ===== السجائر =====
-  document.getElementById("cleo").innerText =
-    PRICES.cigarettes.local.cleopatra;
-
-  document.getElementById("marl").innerText =
-    PRICES.cigarettes.imported.marlboro;
-
-  // ===== التاريخ =====
-  document.getElementById("date").innerText =
-    "آخر تحديث: " + PRICES.lastUpdate;
-</script>
-
-</body>
-</html>
