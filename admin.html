@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تحديث الأسعار</title>
+<style>
+body{font-family:Arial;background:#111;color:#fff;padding:20px}
+input{padding:8px;margin:5px;width:200px}
+button{padding:10px}
+</style>
+</head>
+<body>
+
+<h2>✍️ تحديث الأسعار اليومية</h2>
+
+<label>ذهب 21:</label>
+<input id="gold21"><br>
+
+<label>حديد:</label>
+<input id="steel"><br>
+
+<label>أسمنت:</label>
+<input id="cement"><br>
+
+<button onclick="generate()">توليد البيانات</button>
+
+<pre id="output"></pre>
+
+<script>
+function generate(){
+  document.getElementById("output").innerText = `
+PRICES.gold["21"]="${gold21.value}";
+PRICES.steel.value="${steel.value}";
+PRICES.cement.value="${cement.value}";
+PRICES.lastUpdate="${new Date().toLocaleDateString("ar-EG")}";
+  `;
+}
+</script>
+
+</body>
+</html>
