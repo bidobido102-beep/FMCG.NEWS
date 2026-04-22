@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FMCG – السوق المصري</title>
 
-  <!-- ✅ الربط الصحيح بملف الأسعار -->
+  <!-- ✅ ربط ملف الأسعار -->
   <script src="data.js"></script>
 
   <style>
@@ -59,3 +59,86 @@
 <div class="container">
 
   <!-- ===== أسعار الذهب ===== -->
+  <div class="card">
+    <h3>🥇 أسعار الذهب</h3>
+    <p class="price">عيار 24: <span id="g24"></span></p>
+    <p class="price">عيار 21: <span id="g21"></span></p>
+    <p class="price">عيار 18: <span id="g18"></span></p>
+    <p class="price">جنيه ذهب: <span id="gp"></span></p>
+    <small id="goldSource"></small>
+  </div>
+
+  <!-- ===== أسعار الحديد ===== -->
+  <div class="card">
+    <h3>🏗️ أسعار الحديد</h3>
+    <p class="price" id="steel"></p>
+    <small id="steelSource"></small>
+  </div>
+
+  <!-- ===== أسعار الأسمنت ===== -->
+  <div class="card">
+    <h3>🧱 أسعار الأسمنت</h3>
+    <p class="price" id="cement"></p>
+    <small id="cementSource"></small>
+  </div>
+
+  <!-- ===== شركات FMCG ===== -->
+  <div class="card">
+    <h3>🏢 شركات السلع الاستهلاكية</h3>
+    <p class="price">كوكاكولا: <span id="coca"></span></p>
+    <p class="price">بيبسي: <span id="pepsi"></span></p>
+    <p class="price">إيديتا: <span id="edita"></span></p>
+    <small>المصدر: Enterprise / البيانات الصحفية</small>
+  </div>
+
+  <!-- ===== أسعار السجائر ===== -->
+  <div class="card">
+    <h3>🚬 أسعار السجائر</h3>
+    <p class="price">كليوباترا: <span id="cleo"></span></p>
+    <p class="price">مارلبورو: <span id="marl"></span></p>
+    <small id="cigSource"></small>
+  </div>
+
+  <!-- ===== تاريخ التحديث ===== -->
+  <div class="card">
+    <small id="date"></small>
+  </div>
+
+</div>
+
+<!-- ✅ JavaScript بعد تحميل الصفحة -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // الذهب
+  document.getElementById("g24").innerText = PRICES.gold["24"];
+  document.getElementById("g21").innerText = PRICES.gold["21"];
+  document.getElementById("g18").innerText = PRICES.gold["18"];
+  document.getElementById("gp").innerText  = PRICES.gold.pound;
+  document.getElementById("goldSource").innerText =
+    "المصدر: " + PRICES.gold.source;
+
+  // الحديد
+  document.getElementById("steel").innerText = PRICES.steel.value;
+  document.getElementById("steelSource").innerText =
+    "المصدر: " + PRICES.steel.source;
+
+  // الأسمنت
+  document.getElementById("cement").innerText = PRICES.cement.value;
+  document.getElementById("cementSource").innerText =
+    "المصدر: " + PRICES.cement.source;
+
+  // الشركات
+  document.getElementById("coca").innerText = PRICES.companies.cocaCola;
+  document.getElementById("pepsi").innerText = PRICES.companies.pepsi;
+  document.getElementById("edita").innerText = PRICES.companies.edita;
+
+  // السجائر
+  document.getElementById("cleo").innerText =
+    PRICES.cigarettes.local.cleopatra;
+  document.getElementById("marl").innerText =
+    PRICES.cigarettes.imported.marlboro;
+  document.getElementById("cigSource").innerText =
+    "المصدر: " + PRICES.cigarettes.source;
+
+  // التاريخ
