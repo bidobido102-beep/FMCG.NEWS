@@ -6,83 +6,144 @@
 <title>FMCG Egypt</title>
 
 <style>
-body { font-family: Arial; background:#111; color:#fff; margin:0 }
-header { background:#222; padding:15px; display:flex; justify-content:space-between }
-.container { padding:20px }
-.card { background:#1e1e1e; padding:15px; margin-bottom:10px; border-radius:10px }
-button { padding:8px 12px; cursor:pointer }
-</style>
+body {
+  font-family: Arial;
+  background:#111;
+  color:#fff;
+  margin:0
+}
 
+header {
+  background:#222;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+
+.container {
+  padding:20px
+}
+
+.card {
+  background:#1e1e1e;
+  padding:15px;
+  margin-bottom:12px;
+  border-radius:10px
+}
+
+.price {
+  font-size:18px;
+  font-weight:bold;
+}
+
+.badge {
+  display:inline-block;
+  background:#e53935;
+  padding:3px 6px;
+  font-size:12px;
+  border-radius:4px;
+  margin-top:5px
+}
+
+.company {
+  color:#4fa3ff;
+  font-weight:bold
+}
+
+a {
+  color:#4fa3ff;
+  text-decoration:none
+}
+
+small {
+  color:#aaa
+}
+
+button {
+  padding:8px 12px;
+  cursor:pointer
+}
+</style>
 </head>
 
 <body>
 
 <header>
-<h2>📊 السوق المصري</h2>
-<button onclick="toggleLang()">EN/AR</button>
+  <h2>📊 السوق المصري – FMCG</h2>
+  <button onclick="toggleLang()">EN / AR</button>
 </header>
 
-<div class="container" id="news"></div>
+<div class="container">
+
+  <!-- ===== Prices ===== -->
+  <div class="card">
+    <h3>💰 اتجاهات الأسعار</h3>
+    <p class="price">🥇 الذهب: <span id="gold"></span></p>
+    <p class="price">🏗️ الحديد: <span id="steel"></span></p>
+    <p class="price">🧱 الأسمنت: <span id="cement"></span></p>
+    <small id="priceDate"></small>
+  </div>
+
+  <!-- ===== News ===== -->
+  <h3>📰 ملخص أخبار FMCG</h3>
+  <div id="news">⏳ جاري التحميل...</div>
+
+</div>
 
 <script>
-
 function toggleLang(){
-const html = document.documentElement;
-html.lang = html.lang === 'ar' ? 'en' : 'ar';
-html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
+  const html = document.documentElement;
+  html.lang = html.lang === 'ar' ? 'en' : 'ar';
+  html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 }
 
 async function loadData(){
-const container = document.getElementById("news");
+  const container = document.getElementById("news");
 
-try{
+  try {
+    const res = await fetch(
+      "https://fmcg-api-production-5e80.up.railway.app/api/data"
+    );
+    const data = await res.json();
 
-// 🟡 أخبار
-const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.skynewsarabia.com/web/rss");
-const data = await res.json();
+    /* ===== Prices (Summary Based) ===== */
+    document.getElementById("gold").innerText =
+      data.prices.gold.trend + " – " + data.prices.gold.note;
 
-// 🟡 أسعار وهمية (مؤقت)
-const gold = 7200;
-const iron = 42000;
-const cars = 1000000;
+    document.getElementById("steel").innerText =
+      data.prices.steel.trend + " – " + data.prices.steel.note;
 
-// عرض الأسعار
-container.innerHTML = `
-<div class="card">
-<h3>💰 سعر الذهب عيار 21</h3>
-<p>${gold} جنيه</p>
-</div>
+    document.getElementById("cement").innerText =
+      data.prices.cement.trend + " – " + data.prices.cement.note;
 
-<div class="card">
-<h3>🏗️ سعر الحديد</h3>
-<p>${iron} جنيه</p>
-</div>
+    document.getElementById("priceDate").innerText =
+      "آخر تحديث: " + data.prices.lastUpdate;
 
-<div class="card">
-<h3>🚗 متوسط أسعار السيارات</h3>
-<p>${cars} جنيه</p>
-</div>
+    /* ===== News Feed ===== */
+    container.innerHTML = "";
+    data.news.forEach(n => {
+      container.innerHTML += `
+        <div class="card">
+          <h4>${n.title}</h4>
+          <p>${n.summary}</p>
 
-<h2>📰 الأخبار</h2>
-`;
+          ${n.company ? `<div class="company">🏢 ${n.company}</div>` : ""}
 
-// عرض الأخبار
-data.items.slice(0,10).forEach(n => {
-container.innerHTML += `
-<div class="card">
-<h3>${n.title}</h3>
-<a href="${n.link}" target="_blank">اقرأ</a>
-</div>`;
-});
+          ${n.priceImpact ? `<div class="badge">تأثير سعري</div>` : ""}
 
-}catch(e){
-container.innerHTML = "<p>❌ فشل تحميل البيانات</p>";
-}
+          <br>
+          <small>📌 المصدر: ${n.source}</small><br>
+          <a href="${n.link}" target="_blankdiv>
+      `;
+    });
 
+  } catch(e) {
+    container.innerHTML = "<p>❌ فشل تحميل البيانات</p>";
+  }
 }
 
 loadData();
-
 </script>
 
 </body>
