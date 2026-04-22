@@ -1,149 +1,136 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FMCG Egypt</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FMCG – السوق المصري</title>
 
-<style>
-body {
-  font-family: Arial;
-  background:#111;
-  color:#fff;
-  margin:0
-}
+  <!-- ✅ ربط ملف الأسعار -->
+  <script src="data.js"></script>
 
-header {
-  background:#222;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+    }
 
-.container {
-  padding:20px
-}
+    header {
+      background: #222;
+      padding: 15px;
+      text-align: right;
+    }
 
-.card {
-  background:#1e1e1e;
-  padding:15px;
-  margin-bottom:12px;
-  border-radius:10px
-}
+    .container {
+      padding: 20px;
+    }
 
-.price {
-  font-size:18px;
-  font-weight:bold;
-}
+    .card {
+      background: #1e1e1e;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+    }
 
-.badge {
-  display:inline-block;
-  background:#e53935;
-  padding:3px 6px;
-  font-size:12px;
-  border-radius:4px;
-  margin-top:5px
-}
+    h3 {
+      margin-top: 0;
+    }
 
-.company {
-  color:#4fa3ff;
-  font-weight:bold
-}
+    .price {
+      font-weight: bold;
+      font-size: 18px;
+    }
 
-a {
-  color:#4fa3ff;
-  text-decoration:none
-}
-
-small {
-  color:#aaa
-}
-
-button {
-  padding:8px 12px;
-  cursor:pointer
-}
-</style>
+    small {
+      color: #aaa;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <h2>📊 السوق المصري – FMCG</h2>
-  <button onclick="toggleLang()">EN / AR</button>
+  <h2>📊 FMCG – السوق المصري</h2>
 </header>
 
 <div class="container">
 
-  <!-- ===== Prices ===== -->
+  <!-- ===== الذهب ===== -->
   <div class="card">
-    <h3>💰 اتجاهات الأسعار</h3>
-    <p class="price">🥇 الذهب: <span id="gold"></span></p>
-    <p class="price">🏗️ الحديد: <span id="steel"></span></p>
-    <p class="price">🧱 الأسمنت: <span id="cement"></span></p>
-    <small id="priceDate"></small>
+    <h3>🥇 أسعار الذهب</h3>
+    <p>عيار 24: <span id="g24"></span></p>
+    <p>عيار 21: <span id="g21"></span></p>
+    <p>عيار 18: <span id="g18"></span></p>
+    <p>جنيه ذهب: <span id="gp"></span></p>
   </div>
 
-  <!-- ===== News ===== -->
-  <h3>📰 ملخص أخبار FMCG</h3>
-  <div id="news">⏳ جاري التحميل...</div>
+  <!-- ===== الحديد ===== -->
+  <div class="card">
+    <h3>🏗️ أسعار الحديد</h3>
+    <p class="price" id="steel"></p>
+    <small id="steelNote"></small>
+  </div>
+
+  <!-- ===== الأسمنت ===== -->
+  <div class="card">
+    <h3>🧱 أسعار الأسمنت</h3>
+    <p class="price" id="cement"></p>
+    <small id="cementNote"></small>
+  </div>
+
+  <!-- ===== شركات FMCG ===== -->
+  <div class="card">
+    <h3>🏢 شركات السلع الاستهلاكية</h3>
+    <p>كوكاكولا: <span id="coca"></span></p>
+    <p>بيبسي: <span id="pepsi"></span></p>
+    <p>إيديتا: <span id="edita"></span></p>
+  </div>
+
+  <!-- ===== السجائر ===== -->
+  <div class="card">
+    <h3>🚬 أسعار السجائر</h3>
+    <p>كليوباترا: <span id="cleo"></span></p>
+    <p>مارلبورو: <span id="marl"></span></p>
+  </div>
+
+  <!-- ===== تاريخ التحديث ===== -->
+  <div class="card">
+    <small id="date"></small>
+  </div>
 
 </div>
 
 <script>
-function toggleLang(){
-  const html = document.documentElement;
-  html.lang = html.lang === 'ar' ? 'en' : 'ar';
-  html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
-}
+  // ===== الذهب =====
+  document.getElementById("g24").innerText = PRICES.gold["24"];
+  document.getElementById("g21").innerText = PRICES.gold["21"];
+  document.getElementById("g18").innerText = PRICES.gold["18"];
+  document.getElementById("gp").innerText  = PRICES.gold.pound;
 
-async function loadData(){
-  const container = document.getElementById("news");
+  // ===== الحديد =====
+  document.getElementById("steel").innerText = PRICES.steel.value;
+  document.getElementById("steelNote").innerText = PRICES.steel.note;
 
-  try {
-    const res = await fetch(
-      "https://fmcg-api-production-5e80.up.railway.app/api/data"
-    );
-    const data = await res.json();
+  // ===== الأسمنت =====
+  document.getElementById("cement").innerText = PRICES.cement.value;
+  document.getElementById("cementNote").innerText = PRICES.cement.note;
 
-    /* ===== Prices (Summary Based) ===== */
-    document.getElementById("gold").innerText =
-      data.prices.gold.trend + " – " + data.prices.gold.note;
+  // ===== شركات FMCG =====
+  document.getElementById("coca").innerText = PRICES.companies.cocaCola;
+  document.getElementById("pepsi").innerText = PRICES.companies.pepsi;
+  document.getElementById("edita").innerText = PRICES.companies.edita;
 
-    document.getElementById("steel").innerText =
-      data.prices.steel.trend + " – " + data.prices.steel.note;
+  // ===== السجائر =====
+  document.getElementById("cleo").innerText =
+    PRICES.cigarettes.local.cleopatra;
 
-    document.getElementById("cement").innerText =
-      data.prices.cement.trend + " – " + data.prices.cement.note;
+  document.getElementById("marl").innerText =
+    PRICES.cigarettes.imported.marlboro;
 
-    document.getElementById("priceDate").innerText =
-      "آخر تحديث: " + data.prices.lastUpdate;
-
-    /* ===== News Feed ===== */
-    container.innerHTML = "";
-    data.news.forEach(n => {
-      container.innerHTML += `
-        <div class="card">
-          <h4>${n.title}</h4>
-          <p>${n.summary}</p>
-
-          ${n.company ? `<div class="company">🏢 ${n.company}</div>` : ""}
-
-          ${n.priceImpact ? `<div class="badge">تأثير سعري</div>` : ""}
-
-          <br>
-          <small>📌 المصدر: ${n.source}</small><br>
-          <a href="${n.link}" target="_blankdiv>
-      `;
-    });
-
-  } catch(e) {
-    container.innerHTML = "<p>❌ فشل تحميل البيانات</p>";
-  }
-}
-
-loadData();
+  // ===== التاريخ =====
+  document.getElementById("date").innerText =
+    "آخر تحديث: " + PRICES.lastUpdate;
 </script>
 
 </body>
