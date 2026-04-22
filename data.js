@@ -9,12 +9,12 @@ const PRICES = {
   },
 
   steel: {
-    value: "40000 – 38,000 جنيه للطن",
+    value: "38000 – 40000 جنيه للطن",
     source: "مصراوي – مواد البناء"
   },
 
   cement: {
-    value: "3800 – 3650 جنيه للطن",
+    value: "3650 – 3800 جنيه للطن",
     source: "بوابة الأهرام – اقتصاد"
   },
 
@@ -26,7 +26,7 @@ const PRICES = {
 
   cigarettes: {
     local: {
-      cleopatra: "55 – 49 جنيه"
+      cleopatra: "49 – 55 جنيه"
     },
     imported: {
       marlboro: "102 جنيه"
