@@ -3,57 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Egypt Market Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>FMCG Egypt</title>
 
 <style>
-body {
-  background:#0d1117;
-  color:#fff;
-  font-family:Arial;
-  margin:0;
-}
-
-header {
-  background:#161b22;
-  padding:15px;
-  text-align:center;
-}
-
-.container {
-  padding:15px;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.card {
-  background:#161b22;
-  padding:15px;
-  border-radius:10px;
-}
-
-.big {
-  font-size:22px;
-  margin-top:10px;
-}
-
-canvas {
-  background:#fff;
-  border-radius:10px;
-  margin-top:10px;
-}
-
-#analysis {
-  background:#222;
-  padding:15px;
-  margin-top:15px;
-  border-radius:10px;
-}
+body { font-family: Arial; background:#111; color:#fff; margin:0 }
+header { background:#222; padding:15px; display:flex; justify-content:space-between }
+.container { padding:20px }
+.card { background:#1e1e1e; padding:15px; margin-bottom:10px; border-radius:10px }
+button { padding:8px 12px; cursor:pointer }
 </style>
 
 </head>
@@ -61,113 +18,70 @@ canvas {
 <body>
 
 <header>
-<h2>📊 السوق المصري - Dashboard</h2>
-<button onclick="load()">🔄 تحديث</button>
+<h2>📊 السوق المصري</h2>
+<button onclick="toggleLang()">EN/AR</button>
 </header>
 
-<div class="container">
-
-<!-- كروت -->
-<div class="grid">
-<div class="card">
-<h3>💰 الذهب (عيار 21)</h3>
-<div id="goldPrice" class="big">...</div>
-</div>
-
-<div class="card">
-<h3>🏗️ الحديد</h3>
-<div id="ironPrice" class="big">...</div>
-</div>
-</div>
-
-<!-- Charts -->
-<h3>📈 تطور الذهب</h3>
-<canvas id="goldChart"></canvas>
-
-<h3>📈 تطور الحديد</h3>
-<canvas id="ironChart"></canvas>
-
-<!-- AI تحليل -->
-<div id="analysis"></div>
-
-</div>
+<div class="container" id="news"></div>
 
 <script>
 
-let goldChart, ironChart;
-let lastGold = null;
-
-// 🔹 AI تحليل بسيط
-function analyze(data){
-  if(data.gold21 > 7000){
-    return "📈 السوق في اتجاه صاعد بسبب ارتفاع الذهب";
-  }
-  if(data.iron > 45000){
-    return "🏗️ قطاع البناء تحت ضغط بسبب زيادة الحديد";
-  }
-  return "⚖️ السوق مستقر حالياً";
+function toggleLang(){
+const html = document.documentElement;
+html.lang = html.lang === 'ar' ? 'en' : 'ar';
+html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
 }
 
-// 🔔 تنبيهات
-function checkAlert(price){
-  if(lastGold && price > lastGold){
-    alert("🔼 الذهب طلع!");
-  }
-  if(lastGold && price < lastGold){
-    alert("🔽 الذهب نزل!");
-  }
-  lastGold = price;
+async function loadData(){
+const container = document.getElementById("news");
+
+try{
+
+// 🟡 أخبار
+const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.skynewsarabia.com/web/rss");
+const data = await res.json();
+
+// 🟡 أسعار وهمية (مؤقت)
+const gold = 7200;
+const iron = 42000;
+const cars = 1000000;
+
+// عرض الأسعار
+container.innerHTML = `
+<div class="card">
+<h3>💰 سعر الذهب عيار 21</h3>
+<p>${gold} جنيه</p>
+</div>
+
+<div class="card">
+<h3>🏗️ سعر الحديد</h3>
+<p>${iron} جنيه</p>
+</div>
+
+<div class="card">
+<h3>🚗 متوسط أسعار السيارات</h3>
+<p>${cars} جنيه</p>
+</div>
+
+<h2>📰 الأخبار</h2>
+`;
+
+// عرض الأخبار
+data.items.slice(0,10).forEach(n => {
+container.innerHTML += `
+<div class="card">
+<h3>${n.title}</h3>
+<a href="${n.link}" target="_blank">اقرأ</a>
+</div>`;
+});
+
+}catch(e){
+container.innerHTML = "<p>❌ فشل تحميل البيانات</p>";
 }
-
-// 🚀 تحميل البيانات
-async function load(){
-
-  const res = await fetch("https://fmcg-api-production-cccc.up.railway.app/api/full");
-  const data = await res.json();
-
-  // عرض الأسعار
-  document.getElementById("goldPrice").innerText = data.gold21 + " جنيه";
-  document.getElementById("ironPrice").innerText = data.iron + " جنيه";
-
-  // تنبيه
-  checkAlert(data.gold21);
-
-  // تحليل
-  document.getElementById("analysis").innerText = analyze(data);
-
-  // رسم الذهب
-  if(goldChart) goldChart.destroy();
-  goldChart = new Chart(document.getElementById("goldChart"), {
-    type: 'line',
-    data: {
-      labels: data.history.gold.map((_,i)=>i),
-      datasets: [{
-        label: 'ذهب 21',
-        data: data.history.gold
-      }]
-    }
-  });
-
-  // رسم الحديد
-  if(ironChart) ironChart.destroy();
-  ironChart = new Chart(document.getElementById("ironChart"), {
-    type: 'line',
-    data: {
-      labels: data.history.iron.map((_,i)=>i),
-      datasets: [{
-        label: 'حديد',
-        data: data.history.iron
-      }]
-    }
-  });
 
 }
 
-// تشغيل أول مرة
-load();
-
-// ⏱️ تحديث تلقائي كل 60 ثانية
-setInterval(load, 60000);
+loadData();
 
 </script>
 
