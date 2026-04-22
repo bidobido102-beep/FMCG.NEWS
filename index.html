@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FMCG – السوق المصري</title>
 
-  <!-- ✅ ربط ملف الأسعار -->
+  <!-- ✅ الربط الصحيح لملف الأسعار -->
   <script src="data.js"></script>
 
   <style>
@@ -49,80 +49,4 @@
     }
   </style>
 </head>
-
-<body>
-
-<header>
-  <h2>📊 FMCG – السوق المصري</h2>
-</header>
-
-<div class="container">
-
-  <!-- ===== الذهب ===== -->
-  <div class="card">
-    <h3>🥇 أسعار الذهب</h3>
-    <p>عيار 24: <span id="g24"></span></p>
-    <p>عيار 21: <span id="g21"></span></p>
-    <p>عيار 18: <span id="g18"></span></p>
-    <p>جنيه ذهب: <span id="gp"></span></p>
-    <small id="goldSource"></small>
-  </div>
-
-  <!-- ===== الحديد ===== -->
-  <div class="card">
-    <h3>🏗️ أسعار الحديد</h3>
-    <p class="price" id="steel"></p>
-    <small id="steelSource"></small>
-  </div>
-
-  <!-- ===== الأسمنت ===== -->
-  <div class="card">
-    <h3>🧱 أسعار الأسمنت</h3>
-    <p class="price" id="cement"></p>
-    <small id="cementSource"></small>
-  </div>
-
-  <!-- ===== شركات FMCG ===== -->
-  <div class="card">
-    <h3>🏢 شركات السلع الاستهلاكية</h3>
-    <p>كوكاكولا: <span id="coca"></span></p>
-    <p>بيبسي: <span id="pepsi"></span></p>
-    <p>إيديتا: <span id="edita"></span></p>
-    <small>المصدر: Enterprise / البيانات الصحفية</small>
-  </div>
-
-  <!-- ===== السجائر ===== -->
-  <div class="card">
-    <h3>🚬 أسعار السجائر</h3>
-    <p>كليوباترا: <span id="cleo"></span></p>
-    <p>مارلبورو: <span id="marl"></span></p>
-    <small id="cigSource"></small>
-  </div>
-
-  <!-- ===== تاريخ التحديث ===== -->
-  <div class="card">
-    <small id="date"></small>
-  </div>
-
-</div>
-
-<script>
-  // ===== الذهب =====
-  document.getElementById("g24").innerText = PRICES.gold["24"];
-  document.getElementById("g21").innerText = PRICES.gold["21"];
-  document.getElementById("g18").innerText = PRICES.gold["18"];
-  document.getElementById("gp").innerText  = PRICES.gold.pound;
-  document.getElementById("goldSource").innerText =
-    "المصدر: " + PRICES.gold.source;
-
-  // ===== الحديد =====
-  document.getElementById("steel").innerText = PRICES.steel.value;
-  document.getElementById("steelSource").innerText =
-    "المصدر: " + PRICES.steel.source;
-
-  // ===== الأسمنت =====
-  document.getElementById("cement").innerText = PRICES.cement.value;
-  document.getElementById("cementSource").innerText =
-    "المصدر: " + PRICES.cement.source;
-
-  // ===== شركات FMCG =====
+``
