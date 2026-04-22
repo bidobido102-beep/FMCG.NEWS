@@ -19,6 +19,9 @@
     header {
       background: #222;
       padding: 15px;
+      text-align: right;
+      font-size: 20px;
+      font-weight: bold;
     }
 
     .container {
@@ -29,23 +32,28 @@
       background: #1e1e1e;
       padding: 15px;
       margin-bottom: 15px;
-      border-radius: 10px;
+      border-radius: 12px;
     }
 
     h3 {
       margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin: 6px 0;
     }
 
     .price {
       font-weight: bold;
       font-size: 18px;
-      margin: 5px 0;
     }
 
     small {
       color: #aaa;
       display: block;
-      margin-top: 5px;
+      margin-top: 8px;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -53,29 +61,29 @@
 <body>
 
 <header>
-  <h2>📊 FMCG – السوق المصري</h2>
+  📊 السوق المصري – FMCG 📈
 </header>
 
 <div class="container">
 
-  <!-- ===== أسعار الذهب ===== -->
+  <!-- ===== الذهب ===== -->
   <div class="card">
     <h3>🥇 أسعار الذهب</h3>
-    <p class="price">عيار 24: <span id="g24"></span></p>
-    <p class="price">عيار 21: <span id="g21"></span></p>
-    <p class="price">عيار 18: <span id="g18"></span></p>
-    <p class="price">جنيه ذهب: <span id="gp"></span></p>
+    <p>عيار 24: <span id="g24" class="price"></span></p>
+    <p>عيار 21: <span id="g21" class="price"></span></p>
+    <p>عيار 18: <span id="g18" class="price"></span></p>
+    <p>جنيه ذهب: <span id="gp" class="price"></span></p>
     <small id="goldSource"></small>
   </div>
 
-  <!-- ===== أسعار الحديد ===== -->
+  <!-- ===== الحديد ===== -->
   <div class="card">
     <h3>🏗️ أسعار الحديد</h3>
     <p class="price" id="steel"></p>
     <small id="steelSource"></small>
   </div>
 
-  <!-- ===== أسعار الأسمنت ===== -->
+  <!-- ===== الأسمنت ===== -->
   <div class="card">
     <h3>🧱 أسعار الأسمنت</h3>
     <p class="price" id="cement"></p>
@@ -85,17 +93,17 @@
   <!-- ===== شركات FMCG ===== -->
   <div class="card">
     <h3>🏢 شركات السلع الاستهلاكية</h3>
-    <p class="price">كوكاكولا: <span id="coca"></span></p>
-    <p class="price">بيبسي: <span id="pepsi"></span></p>
-    <p class="price">إيديتا: <span id="edita"></span></p>
+    <p>كوكاكولا: <span id="coca"></span></p>
+    <p>بيبسي: <span id="pepsi"></span></p>
+    <p>إيديتا: <span id="edita"></span></p>
     <small>المصدر: Enterprise / البيانات الصحفية</small>
   </div>
 
-  <!-- ===== أسعار السجائر ===== -->
+  <!-- ===== السجائر ===== -->
   <div class="card">
     <h3>🚬 أسعار السجائر</h3>
-    <p class="price">كليوباترا: <span id="cleo"></span></p>
-    <p class="price">مارلبورو: <span id="marl"></span></p>
+    <p>كليوباترا: <span id="cleo"></span></p>
+    <p>مارلبورو: <span id="marl"></span></p>
     <small id="cigSource"></small>
   </div>
 
@@ -142,3 +150,11 @@ document.addEventListener("DOMContentLoaded", function () {
     "المصدر: " + PRICES.cigarettes.source;
 
   // التاريخ
+  document.getElementById("date").innerText =
+    "آخر تحديث: " + PRICES.lastUpdate;
+
+});
+</script>
+
+</body>
+</html>
