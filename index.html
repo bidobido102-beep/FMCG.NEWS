@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>FMCG.NEWS | أسعار السلع</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
@@ -15,15 +17,75 @@
       padding: 20px;
     }
 
-    h1, h2 {
-      color: #222;
-    }
+    h1, h2 { color: #222; }
 
     #updateTime {
       color: #555;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
-    /* Cards */
     .cards {
       display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .up { color: #1a7f37; }
+    .down { color: #cf222e; }
+    .stable { color: #57606a; }
+
+    #news {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    .trend-btn {
+      background: #0969da;
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .trend-btn:hover { background: #0550ae; }
+
+    #trendResult {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #777;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
