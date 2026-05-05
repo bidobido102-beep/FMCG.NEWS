@@ -89,3 +89,27 @@
 
 <body>
 
+  <h1>📊 أسعار السلع الأساسية اليوم</h1>
+  <p id="updateTime"></p>
+
+  <div class="cards" id="prices"></div>
+
+  <h2>📈 رسم بياني للأسعار</h2>
+  <canvas id="priceChart" height="120"></canvas>
+
+  <h2>📰 خبر السوق</h2>
+  <div id="news"></div>
+
+  <button class="trend-btn" onclick="checkTrend()">
+    هل الأسعار ارتفعت أم انخفضت؟
+  </button>
+
+  <p id="trendResult"></p>
+
+  <footer>
+    © FMCG.NEWS – تحديثات يومية لأسعار السلع
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
