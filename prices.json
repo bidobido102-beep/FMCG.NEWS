@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-05-03 20:00",
+  "lastUpdate": "2026-05-03 21:00",
   "currency": "EGP",
   "categories": [
     {
@@ -16,9 +16,14 @@
           "trend": "up"
         },
         {
-          "name": "أرز 1 كجم",
+          "name": "أرز أبيض 1 كجم",
           "price": 15,
           "trend": "stable"
+        },
+        {
+          "name": "مكرونة 800 جم",
+          "price": 13,
+          "trend": "down"
         }
       ]
     }
