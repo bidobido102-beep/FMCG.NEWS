@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  https://cdn.jsdelivr.net/npm/chart.js>
 
   <style>
     body {
@@ -23,15 +23,22 @@
 
     #updateTime {
       color: #555;
+      margin-bottom: 10px;
+    }
+
+    .section {
+      margin-bottom: 35px;
+    }
+
+    .section-title {
+      font-size: 20px;
       margin-bottom: 15px;
     }
 
-    /* Cards */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 16px;
-      margin-bottom: 30px;
     }
 
     .card {
@@ -39,11 +46,6 @@
       border-radius: 12px;
       padding: 16px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-      font-size: 16px;
     }
 
     .price {
@@ -55,27 +57,32 @@
     .down { color: #cf222e; }
     .stable { color: #57606a; }
 
-    /* Chart */
     .chart-wrapper {
       background: #fff;
       border-radius: 12px;
       padding: 15px;
-      margin-bottom: 30px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       max-width: 600px;
     }
 
-    /* News */
-    #news {
+    #news, #alertBox {
       background: #fff;
       border-radius: 12px;
       padding: 15px;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      font-size: 16px;
     }
 
-    /* Button */
-    .trend-btn {
+    #alertBox {
+      display: none;
+      background: #fff4e5;
+      border: 2px solid #ff9800;
+      color: #a85b00;
+      font-weight: bold;
+    }
+
+    button {
       background: #0969da;
       color: #fff;
       border: none;
@@ -83,16 +90,6 @@
       font-size: 16px;
       border-radius: 10px;
       cursor: pointer;
-    }
-
-    .trend-btn:hover {
-      background: #0550ae;
-    }
-
-    #trendResult {
-      margin-top: 15px;
-      font-size: 18px;
-      font-weight: bold;
     }
 
     footer {
@@ -106,31 +103,40 @@
 
 <body>
 
-  <h1>📊 أسعار السلع اليوم</h1>
-  <p id="updateTime"></p>
+<h1>📊 أسعار السلع اليوم</h1>
+<p id="updateTime"></p>
 
-  <div class="cards" id="prices"></div>
+<div id="alertBox"></div>
 
-  <h2>📈 الرسم البياني للأسعار</h2>
+<div class="section">
+  <div class="section-title">🌍 أسعار عالمية</div>
+  <div class="cards" id="globalPrices"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">🇪🇬 سلع أساسية محلية</div>
+  <div class="cards" id="localPrices"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">📈 الرسم البياني</div>
   <div class="chart-wrapper">
     <canvas id="priceChart" height="60"></canvas>
   </div>
+</div>
 
-  <h2>📰 خبر السوق</h2>
+<div class="section">
+  <div class="section-title">📰 خبر السوق</div>
   <div id="news"></div>
+</div>
 
-  <button class="trend-btn" onclick="checkTrend()">
-    هل الأسعار ارتفعت أم انخفضت؟
-  </button>
+<button onclick="checkTrend()">هل الأسعار ارتفعت أم انخفضت؟</button>
+<p id="trendResult"></p>
 
-  <p id="trendResult"></p>
+<footer>
+  © FMCG.NEWS – يتم تحديث الأسعار تلقائيًا من مصادر مفتوحة
+</footer>
 
-  <footer>
-    © FMCG.NEWS – تحديثات يومية لأسعار السلع
-  </footer>
-
-  <!-- JavaScript -->
-  <script src="script.js"></script>
-
+script.jsscript>
 </body>
 </html>
