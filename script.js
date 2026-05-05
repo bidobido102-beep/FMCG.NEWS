@@ -2,13 +2,10 @@ fetch("prices.json")
   .then(res => res.json())
   .then(data => {
 
-    document.getElementById("updateTime").innerText =
-      "آخر تحديث: " + data.lastUpdate;
+    const usdRate = data.usdRate;
 
     let globalHTML = "";
     let localHTML = "";
-    let labels = [];
-    let values = [];
 
     let up = 0;
     let down = 0;
@@ -16,30 +13,25 @@ fetch("prices.json")
     data.categories.forEach(cat => {
       cat.items.forEach(item => {
 
-        labels.push(item.name);
-        values.push(item.price);
-
         let icon = "➖";
         let cls = "stable";
 
-        if (item.trend === "up") {
-          icon = "🔼";
-          cls = "up";
-          up++;
-        }
+        if (item.trend === "up") { icon = "🔼"; cls = "up"; up++; }
+        if (item.trend === "down") { icon = "🔽"; cls = "down"; down++; }
 
-        if (item.trend === "down") {
-          icon = "🔽";
-          cls = "down";
-          down++;
+        // تحويل الدولار لجنيه
+        let priceText = "";
+        if (item.priceUsd) {
+          const egp = Math.round(item.priceUsd * usdRate);
+          priceText = `${egp} جنيه`;
+        } else {
+          priceText = `${item.price} جنيه`;
         }
 
         const card = `
           <div class="card">
             <h3>${icon} ${item.name}</h3>
-            <div class="price ${cls}">
-              ${item.price}
-            </div>
+            <div class="price ${cls}">${priceText}</div>
           </div>
         `;
 
@@ -54,48 +46,55 @@ fetch("prices.json")
     document.getElementById("globalPrices").innerHTML = globalHTML;
     document.getElementById("localPrices").innerHTML = localHTML;
 
-    // رسم بياني
+    // رسم بياني تاريخي
     new Chart(document.getElementById("priceChart"), {
-      type: "bar",
+      type: "line",
       data: {
-        labels: labels,
-        datasets: [{
-          label: "الأسعار",
-          data: values,
-          backgroundColor: "#0969da"
-        }]
+        labels: data.history.dates,
+        datasets: [
+          {
+            label: "الذهب (أوقية)",
+            data: data.history.gold,
+            borderColor: "#c99700",
+            tension: 0.3
+          },
+          {
+            label: "النفط (برميل)",
+            data: data.history.oil,
+            borderColor: "#0969da",
+            tension: 0.3
+          }
+        ]
       }
     });
 
-    // خبر يتغير حسب الاتجاه
+    // خبر تلقائي
     let newsText =
       up > down
-        ? "تشهد الأسواق اليوم موجة ارتفاع في أسعار عدد من السلع، مدفوعة بتغيرات في التكاليف العالمية."
+        ? "شهدت الأسواق اليوم ارتفاعًا في أسعار الذهب والنفط، ما انعكس على توجهات السوق."
         : down > up
-        ? "سجلت أسعار بعض السلع تراجعات اليوم مع تحسن نسبي في معدلات العرض."
-        : "سادت حالة من الاستقرار النسبي في أسعار السلع دون تغيرات حادة.";
+        ? "سجلت بعض السلع تراجعًا طفيفًا اليوم وسط تحسن في المعروض."
+        : "استقرت أسعار السلع دون تغيّرات ملحوظة اليوم.";
 
-    document.getElementById("news").innerHTML = "🧠 " + newsText;
+    document.getElementById("news").innerText = "📰 " + newsText;
 
-    // تنبيه عند الغلاء
+    // تنبيه
     if (up > 0) {
       document.getElementById("alertBox").style.display = "block";
       document.getElementById("alertBox").innerText =
-        "⚠️ تنبيه: تم تسجيل ارتفاع في أسعار بعض السلع اليوم";
+        "⚠️ تنبيه: ارتفاع في أسعار بعض السلع العالمية اليوم.";
     }
 
     window.stats = { up, down };
   });
 
 function checkTrend() {
-  if (!window.stats) return;
-
-  let { up, down } = window.stats;
-
   let result =
-    up > down ? "📈 الاتجاه العام: ارتفاع الأسعار"
-    : down > up ? "📉 الاتجاه العام: انخفاض الأسعار"
-    : "➖ الاتجاه العام: استقرار";
+    window.stats.up > window.stats.down
+      ? "📈 الاتجاه العام: ارتفاع"
+      : window.stats.down > window.stats.up
+      ? "📉 الاتجاه العام: انخفاض"
+      : "➖ الاتجاه العام: استقرار";
 
   document.getElementById("trendResult").innerText = result;
 }
