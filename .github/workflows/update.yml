@@ -1,8 +1,8 @@
-name: Auto Update Oil & Gold Prices
+name: Auto Update USD, Gold & Oil (Weekly)
 
 on:
   schedule:
-    - cron: "0 8 * * *"
+    - cron: "0 7 * * *"
   workflow_dispatch:
 
 jobs:
@@ -11,48 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Fetch real oil and gold prices
+      - name: Fetch USD rate
         run: |
-          GOLD_PRICE=$(curl -s https://api.metals.live/v1/spot/gold | jq '.[0].gold')
-          OIL_PRICE=$(curl -s https://api.metals.live/v1/spot/oil | jq '.[0].oil')
+          USD_EGP=$(curl -s https://open.er-api.com/v6/latest/USD | jq '.rates.EGP')
+
+          GOLD_USD=$(curl -s https://api.metals.live/v1/spot/gold | jq '.[0].gold')
+          OIL_USD=$(curl -s https://api.metals.live/v1/spot/oil | jq '.[0].oil')
+
+          GOLD_EGP=$(echo "$GOLD_USD * $USD_EGP" | bc | xargs printf "%.0f")
+          OIL_EGP=$(echo "$OIL_USD * $USD_EGP" | bc | xargs printf "%.0f")
 
           cat <<EOF > prices.json
           {
             "lastUpdate": "$(date '+%Y-%m-%d %H:%M')",
-            "currency": "USD",
-            "aiNews": "شهدت الأسواق العالمية اليوم تحركات ملحوظة، حيث ارتفعت أسعار النفط متأثرة بعوامل العرض والطلب، بينما حافظ الذهب على استقرار نسبي وسط ترقب المستثمرين.",
+            "currency": "EGP",
+            "usdRate": $USD_EGP,
+            "history": {
+              "dates": ["-6","-5","-4","-3","-2","-1","اليوم"],
+              "gold": [4450,4480,4520,4550,4580,4600,$GOLD_EGP],
+              "oil": [4700,4800,4900,5000,5100,5200,$OIL_EGP]
+            },
             "categories": [
               {
                 "name": "أسعار عالمية",
                 "items": [
-                  {
-                    "name": "النفط الخام (برميل)",
-                    "price": $OIL_PRICE,
-                    "trend": "up"
-                  },
-                  {
-                    "name": "الذهب (أوقية)",
-                    "price": $GOLD_PRICE,
-                    "trend": "stable"
-                  }
-                ]
-              },
-              {
-                "name": "السلع الأساسية",
-                "items": [
-                  { "name": "سكر 1 كجم", "price": 12.6, "trend": "stable" },
-                  { "name": "زيت تموين 800 مل", "price": 30, "trend": "up" },
-                  { "name": "أرز أبيض 1 كجم", "price": 15, "trend": "stable" }
-                ]
-              }
-            ]
-          }
-          EOF
-
-      - name: Commit & Push
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add prices.json
-          git commit -m "Update real oil & gold prices" || echo "No changes"
-          git push
+                  { "name": "الذهب (أوقية)", "price": $GOLD_EGP, "trend": "up" },
