@@ -1,27 +1,33 @@
 fetch("prices.json")
   .then(response => response.json())
   .then(data => {
+
+    // وقت آخر تحديث
     document.getElementById("updateTime").innerText =
       "آخر تحديث: " + data.lastUpdate;
 
-    let html = "";
+    let cardsHTML = "";
+    let up = 0;
+    let down = 0;
 
     data.categories.forEach(category => {
-      html += `<h2>${category.name}</h2>`;
-
       category.items.forEach(item => {
+
         let icon = "➖";
-        if (item.trend === "up") icon = "🔼";
-        if (item.trend === "down") icon = "🔽";
+        let cls = "stable";
 
-        html += `
-          <div class="item">
-            ${icon} <strong>${item.name}</strong><br>
-            السعر: ${item.price} جنيه
-          </div>
-        `;
-      });
-    });
+        if (item.trend === "up") {
+          icon = "🔼";
+          cls = "up";
+          up++;
+        }
 
-    document.getElementById("prices").innerHTML = html;
-  });
+        if (item.trend === "down") {
+          icon = "🔽";
+          cls = "down";
+          down++;
+        }
+
+        cardsHTML += `
+          <div class="card">
+            <h3>${icon} ${item.name}</h3>
