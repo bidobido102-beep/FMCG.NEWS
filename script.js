@@ -2,36 +2,27 @@ fetch("prices.json")
   .then(res => res.json())
   .then(data => {
 
-    const usdRate = data.usdRate;
+    document.getElementById("updateTime").innerText =
+      "آخر تحديث: " + data.lastUpdate +
+      " | سعر الدولار: " + Math.round(data.usdRate) + " جنيه";
 
     let globalHTML = "";
     let localHTML = "";
-
-    let up = 0;
-    let down = 0;
+    let up = 0, down = 0;
 
     data.categories.forEach(cat => {
       cat.items.forEach(item => {
 
-        let icon = "➖";
-        let cls = "stable";
-
+        let icon = "➖", cls = "stable";
         if (item.trend === "up") { icon = "🔼"; cls = "up"; up++; }
         if (item.trend === "down") { icon = "🔽"; cls = "down"; down++; }
-
-        // تحويل الدولار لجنيه
-        let priceText = "";
-        if (item.priceUsd) {
-          const egp = Math.round(item.priceUsd * usdRate);
-          priceText = `${egp} جنيه`;
-        } else {
-          priceText = `${item.price} جنيه`;
-        }
 
         const card = `
           <div class="card">
             <h3>${icon} ${item.name}</h3>
-            <div class="price ${cls}">${priceText}</div>
+            <div class="price ${cls}">
+              ${item.price} جنيه
+            </div>
           </div>
         `;
 
@@ -46,43 +37,41 @@ fetch("prices.json")
     document.getElementById("globalPrices").innerHTML = globalHTML;
     document.getElementById("localPrices").innerHTML = localHTML;
 
-    // رسم بياني تاريخي
+    // رسم أسبوعي
     new Chart(document.getElementById("priceChart"), {
       type: "line",
       data: {
         labels: data.history.dates,
         datasets: [
           {
-            label: "الذهب (أوقية)",
+            label: "الذهب (جنيه)",
             data: data.history.gold,
             borderColor: "#c99700",
-            tension: 0.3
+            tension: 0.4
           },
           {
-            label: "النفط (برميل)",
+            label: "النفط (جنيه)",
             data: data.history.oil,
             borderColor: "#0969da",
-            tension: 0.3
+            tension: 0.4
           }
         ]
       }
     });
 
-    // خبر تلقائي
     let newsText =
       up > down
-        ? "شهدت الأسواق اليوم ارتفاعًا في أسعار الذهب والنفط، ما انعكس على توجهات السوق."
+        ? "واصلت أسعار الذهب والنفط ارتفاعها هذا الأسبوع، مدفوعة بحركة الأسواق العالمية."
         : down > up
-        ? "سجلت بعض السلع تراجعًا طفيفًا اليوم وسط تحسن في المعروض."
-        : "استقرت أسعار السلع دون تغيّرات ملحوظة اليوم.";
+        ? "شهدت أسعار الطاقة والمعادن تراجعًا نسبيًا خلال الأسبوع."
+        : "تحركت أسعار السلع في نطاق مستقر خلال الأسبوع.";
 
-    document.getElementById("news").innerText = "📰 " + newsText;
+    document.getElementById("news").innerText = "🧠 " + newsText;
 
-    // تنبيه
     if (up > 0) {
       document.getElementById("alertBox").style.display = "block";
       document.getElementById("alertBox").innerText =
-        "⚠️ تنبيه: ارتفاع في أسعار بعض السلع العالمية اليوم.";
+        "⚠️ تنبيه: ارتفاع أسعار الذهب أو النفط خلال الأسبوع.";
     }
 
     window.stats = { up, down };
@@ -91,9 +80,9 @@ fetch("prices.json")
 function checkTrend() {
   let result =
     window.stats.up > window.stats.down
-      ? "📈 الاتجاه العام: ارتفاع"
+      ? "📈 الاتجاه العام: صعود"
       : window.stats.down > window.stats.up
-      ? "📉 الاتجاه العام: انخفاض"
+      ? "📉 الاتجاه العام: هبوط"
       : "➖ الاتجاه العام: استقرار";
 
   document.getElementById("trendResult").innerText = result;
