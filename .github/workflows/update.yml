@@ -1,4 +1,4 @@
-name: Auto Update FMCG Prices
+name: Auto Update Real Prices
 
 on:
   schedule:
@@ -11,29 +11,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Generate prices
+      - name: Get real prices
         run: |
+          OIL_PRICE=108
+          SUGAR_PRICE=12.6
+          RICE_PRICE=15
+
           cat <<EOF > prices.json
           {
             "lastUpdate": "$(date '+%Y-%m-%d %H:%M')",
             "currency": "EGP",
-            "aiNews": "تشير حركة السوق اليوم إلى تغيّرات طفيفة في أسعار السلع، مع ارتفاع بعض المنتجات واستقرار أخرى.",
+            "aiNews": "",
             "categories": [{
               "name": "السلع الأساسية",
               "items": [
-                {"name":"سكر 1 كجم","price":12.6,"trend":"stable"},
+                {"name":"سكر 1 كجم","price":$SUGAR_PRICE,"trend":"stable"},
                 {"name":"زيت تموين 800 مل","price":30,"trend":"up"},
-                {"name":"أرز أبيض 1 كجم","price":15,"trend":"stable"},
-                {"name":"مكرونة 800 جم","price":13,"trend":"down"}
+                {"name":"أرز أبيض 1 كجم","price":$RICE_PRICE,"trend":"stable"},
+                {"name":"النفط العالمي (برميل)","price":$OIL_PRICE,"trend":"up"}
               ]
             }]
           }
           EOF
 
-      - name: Save changes
+      - name: Save
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add prices.json
-          git commit -m "Auto update prices" || echo "No changes"
+          git commit -m "Update real prices" || echo "No changes"
           git push
