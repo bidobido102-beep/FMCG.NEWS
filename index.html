@@ -1,160 +1,32 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FMCG – السوق المصري</title>
-
-  <!-- ✅ ربط ملف الأسعار -->
-  <script src="data.js"></script>
-
+  <title>FMCG News - أسعار السلع</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      margin: 0;
-    }
-
-    header {
-      background: #222;
-      padding: 15px;
-      text-align: right;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .container {
+      font-family: Arial;
+      direction: rtl;
+      background: #f4f4f4;
       padding: 20px;
     }
-
-    .card {
-      background: #1e1e1e;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-    }
-
-    h3 {
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-
-    p {
-      margin: 6px 0;
-    }
-
-    .price {
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    small {
-      color: #aaa;
-      display: block;
-      margin-top: 8px;
-      font-size: 13px;
+    .item {
+      background: white;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  📊 السوق المصري – FMCG 📈
-</header>
+<h1>📊 أسعار السلع التموينية اليوم</h1>
+<p id="updateTime"></p>
 
-<div class="container">
+<div id="prices"></div>
 
-  <!-- ===== الذهب ===== -->
-  <div class="card">
-    <h3>🥇 أسعار الذهب</h3>
-    <p>عيار 24: <span id="g24" class="price"></span></p>
-    <p>عيار 21: <span id="g21" class="price"></span></p>
-    <p>عيار 18: <span id="g18" class="price"></span></p>
-    <p>جنيه ذهب: <span id="gp" class="price"></span></p>
-    <small id="goldSource"></small>
-  </div>
-
-  <!-- ===== الحديد ===== -->
-  <div class="card">
-    <h3>🏗️ أسعار الحديد</h3>
-    <p class="price" id="steel"></p>
-    <small id="steelSource"></small>
-  </div>
-
-  <!-- ===== الأسمنت ===== -->
-  <div class="card">
-    <h3>🧱 أسعار الأسمنت</h3>
-    <p class="price" id="cement"></p>
-    <small id="cementSource"></small>
-  </div>
-
-  <!-- ===== شركات FMCG ===== -->
-  <div class="card">
-    <h3>🏢 شركات السلع الاستهلاكية</h3>
-    <p>كوكاكولا: <span id="coca"></span></p>
-    <p>بيبسي: <span id="pepsi"></span></p>
-    <p>إيديتا: <span id="edita"></span></p>
-    <small>المصدر: Enterprise / البيانات الصحفية</small>
-  </div>
-
-  <!-- ===== السجائر ===== -->
-  <div class="card">
-    <h3>🚬 أسعار السجائر</h3>
-    <p>كليوباترا: <span id="cleo"></span></p>
-    <p>مارلبورو: <span id="marl"></span></p>
-    <small id="cigSource"></small>
-  </div>
-
-  <!-- ===== تاريخ التحديث ===== -->
-  <div class="card">
-    <small id="date"></small>
-  </div>
-
-</div>
-
-<!-- ✅ JavaScript بعد تحميل الصفحة -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  // الذهب
-  document.getElementById("g24").innerText = PRICES.gold["24"];
-  document.getElementById("g21").innerText = PRICES.gold["21"];
-  document.getElementById("g18").innerText = PRICES.gold["18"];
-  document.getElementById("gp").innerText  = PRICES.gold.pound;
-  document.getElementById("goldSource").innerText =
-    "المصدر: " + PRICES.gold.source;
-
-  // الحديد
-  document.getElementById("steel").innerText = PRICES.steel.value;
-  document.getElementById("steelSource").innerText =
-    "المصدر: " + PRICES.steel.source;
-
-  // الأسمنت
-  document.getElementById("cement").innerText = PRICES.cement.value;
-  document.getElementById("cementSource").innerText =
-    "المصدر: " + PRICES.cement.source;
-
-  // الشركات
-  document.getElementById("coca").innerText = PRICES.companies.cocaCola;
-  document.getElementById("pepsi").innerText = PRICES.companies.pepsi;
-  document.getElementById("edita").innerText = PRICES.companies.edita;
-
-  // السجائر
-  document.getElementById("cleo").innerText =
-    PRICES.cigarettes.local.cleopatra;
-  document.getElementById("marl").innerText =
-    PRICES.cigarettes.imported.marlboro;
-  document.getElementById("cigSource").innerText =
-    "المصدر: " + PRICES.cigarettes.source;
-
-  // التاريخ
-  document.getElementById("date").innerText =
-    "آخر تحديث: " + PRICES.lastUpdate;
-
-});
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
+``
