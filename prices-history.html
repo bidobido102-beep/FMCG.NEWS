@@ -1,20 +1,46 @@
-const PRICE_HISTORY = [
-  {
-    date: "22 إبريل 2026",
-    gold21: "6960 جنيه",
-    steel: "38000 – 40000 جنيه",
-    cement: "3650 – 3800 جنيه"
-  },
-  {
-    date: "21 إبريل 2026",
-    gold21: "6850 جنيه",
-    steel: "37500 – 39500 جنيه",
-    cement: "3600 – 3750 جنيه"
-  },
-  {
-    date: "20 إبريل 2026",
-    gold21: "6700 جنيه",
-    steel: "37000 – 39000 جنيه",
-    cement: "3550 – 3700 جنيه"
-  }
-];
+<!DOCTYPE html><!DOCTYPE html" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>أرشيف الأسعار</title>
+
+<script src="prices-history.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background:#111;
+  color:#fff;
+  padding:20px;
+}
+.card {
+  background:#1e1e1e;
+  padding:15px;
+  margin-bottom:10px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📊 أرشيف الأسعار اليومية</h2>
+
+<div id="history"></div>
+
+<script>
+const container = document.getElementById("history");
+
+PRICE_HISTORY.forEach(day => {
+  container.innerHTML += `
+    <div class="card">
+      <strong>${day.date}</strong><br>
+      🥇 ذهب 21: ${day.gold21}<br>
+      🏗️ حديد: ${day.steel}<br>
+      🧱 أسمنت: ${day.cement}
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
