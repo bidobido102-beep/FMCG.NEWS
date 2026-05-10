@@ -1,49 +1,74 @@
 /* ==================================================
-   FMCG NEWS – DAILY PRICES DATA
-   Last Update: 22 April 2026
+   FMCG MARKET PRICES – EGYPT
+   Date: 10 May 2026
+   Sources: Local media & official statements
    ================================================== */
 
 const PRICES = {
 
+  /* ========== تاريخ التحديث ========== */
+  lastUpdate: "10 مايو 2026",
+
   /* ========== أسعار الذهب ========== */
   gold: {
-    "24": "7954.29 جنيه",
-    "21": "6960 جنيه",
-    "18": "5965.71 جنيه",
-    "pound": "55680 جنيه",
+    "24": "— جنيه",
+    "21": "— جنيه",
+    "18": "— جنيه",
+    "pound": "— جنيه",
     source: "اليوم السابع – شعبة الذهب"
   },
 
-  /* ========== أسعار الحديد ========== */
+  /* ========== مواد البناء ========== */
   steel: {
-    value: "38000 – 40000 جنيه للطن",
+    value: "— جنيه / طن",
     source: "مصراوي – مواد البناء"
   },
 
-  /* ========== أسعار الأسمنت ========== */
   cement: {
-    value: "3650 – 3800 جنيه للطن",
+    value: "— جنيه / طن",
     source: "بوابة الأهرام – اقتصاد"
   },
 
-  /* ========== شركات السلع الاستهلاكية ========== */
-  companies: {
-    cocaCola: "زيادة متوقعة – لم يصدر بيان رسمي",
-    pepsi: "استقرار الأسعار",
-    edita: "مراجعة أسعار بعض المنتجات"
+  /* ========== السلع الغذائية ========== */
+  food: {
+    sugar: "— جنيه / كجم",
+    oil: "— جنيه / لتر",
+    rice: "— جنيه / كجم",
+    source: "وزارة التموين – تقارير الأسواق"
   },
 
-  /* ========== أسعار السجائر ========== */
+  /* ========== السجائر ========== */
   cigarettes: {
     local: {
-      cleopatra: "49 – 55 جنيه"
+      cleopatra: "— جنيه"
     },
     imported: {
-      marlboro: "102 جنيه"
+      marlboro: "— جنيه"
     },
-    source: "بيانات وزارة المالية"
+    source: "وزارة المالية – آخر قرار رسمي"
   },
 
-  /* ========== تاريخ آخر تحديث ========== */
-  lastUpdate: "22 إبريل 2026"
+  /* ========== شركات FMCG ========== */
+  companies: [
+    {
+      name: "Coca-Cola",
+      status: "لم يتم إعلان تسعير جديد حتى الآن",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg"
+    },
+    {
+      name: "Pepsi",
+      status: "استقرار الأسعار",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/2/20/Pepsi_logo.svg"
+    },
+    {
+      name: "Edita",
+      status: "مراجعة دورية للأسعار",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/6/63/Edita_Food_Industries_logo.png"
+    },
+    {
+      name: "Eastern Company",
+      status: "آخر زيادة وفق القرار الحكومي السابق",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Eastern_Company_logo.png"
+    }
+  ]
 };
